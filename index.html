@@ -3,46 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Handyman Express - Estilo inDrive</title>
+    <title>Handyman Express - Soluciones Técnicas al Instante</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         #map { 
-            height: 350px; 
+            height: 380px; 
             width: 100%; 
             border-radius: 1rem; 
             z-index: 1; 
         }
+        html { scroll-behavior: smooth; }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col">
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col">
 
     <!-- Navegación Principal -->
-    <nav class="bg-blue-900 text-white p-4 shadow-lg sticky top-0 z-50">
-        <div class="max-w-5xl mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-bold flex items-center gap-2">⚡ Handyman Express</h1>
-            <div class="flex gap-2 text-sm font-semibold items-center">
-                <button onclick="switchTab('request')" id="btn-request" class="px-3 py-2 rounded-lg bg-blue-700 text-white transition">Solicitar</button>
-                <button onclick="switchTab('techs')" id="btn-techs" class="px-3 py-2 rounded-lg hover:bg-blue-800 text-blue-200 transition">Técnicos</button>
-                <button onclick="switchTab('jobs')" id="btn-jobs" class="px-3 py-2 rounded-lg hover:bg-blue-800 text-blue-200 transition flex items-center gap-1">
-                    Mis Pedidos <span id="job-badge" class="bg-amber-500 text-gray-900 text-xs px-2 py-0.5 rounded-full font-bold hidden">0</span>
+    <nav class="bg-blue-900 text-white p-4 shadow-xl sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <a href="#" onclick="showSection('landing')" class="text-2xl font-black flex items-center gap-2">
+                ⚡ Handyman<span class="text-amber-400">Express</span>
+            </a>
+            
+            <div class="flex gap-2 sm:gap-4 text-sm font-semibold items-center">
+                <button onclick="showSection('landing')" id="nav-landing" class="hover:text-amber-400 transition hidden sm:inline-block">Inicio</button>
+                <button onclick="showSection('app')" id="nav-app" class="bg-amber-500 text-gray-900 px-4 py-2 rounded-xl font-bold hover:bg-amber-400 transition shadow-md">
+                    🚀 Solicitar Técnico
                 </button>
-                <button onclick="openJoinModal()" class="bg-amber-500 text-gray-900 px-3 py-2 rounded-lg font-bold text-xs hover:bg-amber-600 transition">
+                <button onclick="openJoinModal()" class="border border-blue-400 text-blue-100 hover:bg-blue-800 px-3 py-2 rounded-xl text-xs font-semibold transition">
                     💼 Trabaja con Nosotros
                 </button>
             </div>
         </div>
     </nav>
 
-    <!-- CONTENEDOR PRINCIPAL -->
-    <main class="max-w-4xl mx-auto p-4 flex-grow w-full">
+    <!-- ========================================================= -->
+    <!-- 1. LANDING PAGE DE INICIO (BIENVENIDA Y QUIÉNES SOMOS) -->
+    <!-- ========================================================= -->
+    <div id="page-landing" class="space-y-16 pb-16">
 
-        <!-- 1. PESTAÑA: SOLICITAR CON MAPA INTERACTIVO -->
+        <!-- Hero Section -->
+        <section class="bg-gradient-to-b from-blue-900 via-blue-800 to-indigo-900 text-white py-20 px-4 text-center">
+            <div class="max-w-4xl mx-auto space-y-6">
+                <span class="bg-blue-800/80 text-amber-300 text-xs font-bold uppercase tracking-wider px-4 py-1.5 rounded-full border border-blue-700 inline-block">
+                    Servicios Técnicos A Domicilio en Panamá
+                </span>
+                <h1 class="text-4xl md:text-6xl font-black leading-tight">
+                    Plomería, Electricidad y Climatización en <span class="text-amber-400">Minutos</span>
+                </h1>
+                <p class="text-lg md:text-xl text-blue-100 max-w-2xl mx-auto font-light">
+                    Conectamos tu hogar u oficina con técnicos calificados y verificados cerca de tu ubicación. Transparencia en precios y respuesta rápida.
+                </p>
+                <div class="pt-4 flex flex-col sm:flex-row justify-center gap-4">
+                    <button onclick="showSection('app')" class="bg-amber-500 hover:bg-amber-400 text-gray-900 text-lg font-extrabold px-8 py-4 rounded-2xl shadow-xl transition transform hover:-translate-y-0.5">
+                        📍 Pedir Técnico Ahora
+                    </button>
+                    <a href="#about" class="bg-blue-800/60 hover:bg-blue-800 text-white font-bold px-6 py-4 rounded-2xl border border-blue-700 transition">
+                        Conoce Más
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quiénes Somos -->
+        <section id="about" class="max-w-5xl mx-auto px-4">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="space-y-4">
+                    <span class="text-blue-900 font-bold text-xs uppercase tracking-widest">Sobre Nosotros</span>
+                    <h2 class="text-3xl font-extrabold text-gray-900">Tu red confiable de asistencia técnica profesional</h2>
+                    <p class="text-gray-600 leading-relaxed">
+                        Nacimos para resolver las emergencias del hogar sin complicaciones. Nos encargamos de conectar directamente a clientes que necesitan soluciones rápidas en plomería, electricidad, aire acondicionado y mantenimiento de techos con especialistas locales.
+                    </p>
+                    <div class="grid grid-cols-2 gap-4 pt-4">
+                        <div class="border-l-4 border-amber-500 pl-4">
+                            <span class="block text-2xl font-black text-blue-900">+500</span>
+                            <span class="text-xs text-gray-500">Servicios Realizados</span>
+                        </div>
+                        <div class="border-l-4 border-amber-500 pl-4">
+                            <span class="block text-2xl font-black text-blue-900">4.9 ⭐</span>
+                            <span class="text-xs text-gray-500">Calificación Promedio</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-tr from-blue-100 to-amber-50 p-8 rounded-3xl border border-blue-100 space-y-4">
+                    <h3 class="text-xl font-bold text-blue-900">¿Por qué elegirnos?</h3>
+                    <ul class="space-y-3 text-sm text-gray-700">
+                        <li class="flex items-center gap-3">
+                            <span class="bg-blue-900 text-amber-400 font-bold p-1 rounded-full text-xs">✓</span>
+                            Técnicos verificados con perfil e historial.
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="bg-blue-900 text-amber-400 font-bold p-1 rounded-full text-xs">✓</span>
+                            Ubicación en tiempo real en mapa interactivo.
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="bg-blue-900 text-amber-400 font-bold p-1 rounded-full text-xs">✓</span>
+                            Precios claros desde el primer clic.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Servicios Ofrecidos -->
+        <section class="max-w-6xl mx-auto px-4">
+            <div class="text-center mb-12 space-y-2">
+                <h2 class="text-3xl font-extrabold text-blue-900">Nuestras Especialidades</h2>
+                <p class="text-gray-500 text-sm">Selecciona el área que requiere atención en tu hogar</p>
+            </div>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition">
+                    <div class="text-4xl mb-4">🚰</div>
+                    <h3 class="font-bold text-gray-900 text-lg mb-1">Plomería</h3>
+                    <p class="text-xs text-gray-500">Reparación de fugas, destapes, calentadores y tuberías en general.</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition">
+                    <div class="text-4xl mb-4">⚡</div>
+                    <h3 class="font-bold text-gray-900 text-lg mb-1">Electricidad</h3>
+                    <p class="text-xs text-gray-500">Cortocircuitos, instalación de lámparas, abanicos y acometidas.</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition">
+                    <div class="text-4xl mb-4">❄️</div>
+                    <h3 class="font-bold text-gray-900 text-lg mb-1">Aire Acondicionado</h3>
+                    <p class="text-xs text-gray-500">Mantenimiento preventivo, recarga de gas e instalación de splits.</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition">
+                    <div class="text-4xl mb-4">🏠</div>
+                    <h3 class="font-bold text-gray-900 text-lg mb-1">Techos y Tejados</h3>
+                    <p class="text-xs text-gray-500">Impermeabilización, filtraciones, canales y cambio de techo.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Llamado a la acción inferior -->
+        <section class="bg-blue-900 text-white py-12 px-4 rounded-3xl max-w-5xl mx-auto text-center space-y-4">
+            <h2 class="text-3xl font-bold">¿Tienes una emergencia técnica en casa?</h2>
+            <p class="text-blue-200 text-sm max-w-xl mx-auto">Ubica en el mapa a los técnicos disponibles cerca de ti y solicita asistencia de inmediato.</p>
+            <button onclick="showSection('app')" class="bg-amber-500 hover:bg-amber-400 text-gray-900 font-extrabold px-8 py-3.5 rounded-xl shadow-lg transition">
+                🚀 Abrir Mapa y Crear Pedido
+            </button>
+        </section>
+
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- 2. APLICACIÓN DE PEDIDOS Y MAPA (SISTEMA DE SOLICITUD) -->
+    <!-- ========================================================= -->
+    <div id="page-app" class="hidden max-w-5xl mx-auto p-4 flex-grow w-full space-y-6">
+
+        <!-- Pestañas internas del panel -->
+        <div class="flex justify-between items-center border-b border-gray-200 pb-3">
+            <div class="flex gap-2">
+                <button onclick="switchTab('request')" id="btn-request" class="px-4 py-2 rounded-xl bg-blue-900 text-white font-bold text-sm">
+                    📍 Mapa & Solicitar
+                </button>
+                <button onclick="switchTab('techs')" id="btn-techs" class="px-4 py-2 rounded-xl text-gray-600 hover:bg-gray-200 font-bold text-sm">
+                    👥 Técnicos
+                </button>
+                <button onclick="switchTab('jobs')" id="btn-jobs" class="px-4 py-2 rounded-xl text-gray-600 hover:bg-gray-200 font-bold text-sm flex items-center gap-1">
+                    📋 Pedidos <span id="job-badge" class="bg-amber-500 text-gray-900 text-xs px-2 py-0.5 rounded-full font-bold hidden">0</span>
+                </button>
+            </div>
+            <button onclick="showSection('landing')" class="text-xs font-bold text-gray-500 hover:text-blue-900">
+                ← Volver a Inicio
+            </button>
+        </div>
+
+        <!-- PESTAÑA: SOLICITAR CON MAPA INTERACTIVO -->
         <section id="tab-request" class="space-y-6">
             
-            <!-- CONTENEDOR DEL MAPA EN VIVO -->
             <div class="bg-white p-4 rounded-2xl shadow-md border border-gray-200">
                 <div class="flex justify-between items-center mb-3">
                     <div>
@@ -56,7 +188,6 @@
                 <div id="map"></div>
             </div>
 
-            <!-- FORMULARIO DE SOLICITUD -->
             <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-200">
                 <h2 class="text-xl font-bold text-blue-900 mb-4">🚗 Configura tu Pedido</h2>
 
@@ -90,7 +221,6 @@
                         <div>
                             <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Tipo de Trabajo / Servicio</label>
                             <select id="serviceTask" onchange="calculateCost()" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                                <!-- Se llena dinámicamente -->
                             </select>
                         </div>
                     </div>
@@ -99,7 +229,6 @@
                         <div>
                             <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Seleccionar Técnico Cercano</label>
                             <select id="selectedTech" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                                <!-- Se llena dinámicamente -->
                             </select>
                         </div>
                         <div>
@@ -123,13 +252,13 @@
             </div>
         </section>
 
-        <!-- 2. PESTAÑA: DIRECTORIO DE TÉCNICOS -->
+        <!-- PESTAÑA: DIRECTORIO DE TÉCNICOS -->
         <section id="tab-techs" class="hidden space-y-4">
             <h2 class="text-xl font-bold text-blue-900">👥 Técnicos Activos en el Radar</h2>
             <div id="techsGrid" class="grid md:grid-cols-2 gap-4"></div>
         </section>
 
-        <!-- 3. PESTAÑA: HISTORIAL DE PEDIDOS -->
+        <!-- PESTAÑA: HISTORIAL DE PEDIDOS -->
         <section id="tab-jobs" class="hidden space-y-4">
             <h2 class="text-xl font-bold text-blue-900">📋 Pedidos Activos</h2>
             <div id="jobsList" class="space-y-3">
@@ -139,9 +268,17 @@
             </div>
         </section>
 
-    </main>
+    </div>
 
-    <!-- Modal Trabaja con Nosotros -->
+    <!-- Pie de página -->
+    <footer class="bg-gray-900 text-gray-400 py-8 text-center text-xs mt-auto border-t border-gray-800">
+        <div class="max-w-4xl mx-auto space-y-2">
+            <p class="font-bold text-gray-300">Handyman Express © 2026 - Soluciones Técnicas a Domicilio</p>
+            <p>Panamá, República de Panamá</p>
+        </div>
+    </footer>
+
+    <!-- MODAL TRABAJA CON NOSOTROS -->
     <div id="joinModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
         <div class="bg-white p-6 rounded-2xl max-w-md w-full shadow-2xl space-y-4">
             <div class="flex justify-between items-center">
@@ -167,10 +304,9 @@
         </div>
     </div>
 
-    <!-- Leaflet JS (Librería de Mapas) -->
+    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // LISTA DE SERVICIOS Y PRECIOS
         const serviceCatalog = {
             "Plomería": [
                 { name: "Reparación de Fuga / Grifo", price: 25 },
@@ -202,7 +338,6 @@
             ]
         };
 
-        // BASE DE DATOS DE TÉCNICOS CON COORDENADAS
         const technicians = [
             { id: 1, name: "Roberto Gómez", category: "Plomería", rating: "4.9 ⭐", jobsDone: 142, status: "Disponible", photo: "👨‍🔧", lat: 8.9920, lng: -79.5180 },
             { id: 2, name: "Carlos Rodríguez", category: "Electricidad", rating: "5.0 ⭐", jobsDone: 98, status: "Disponible", photo: "🧑‍🔧", lat: 8.9800, lng: -79.5250 },
@@ -217,6 +352,24 @@
 
         let userLat = 8.9824;
         let userLng = -79.5199;
+
+        // NAVEGACIÓN ENTRE VISTAS (LANDING / APP)
+        function showSection(sectionName) {
+            if (sectionName === 'landing') {
+                document.getElementById('page-landing').classList.remove('hidden');
+                document.getElementById('page-app').classList.add('hidden');
+            } else {
+                document.getElementById('page-landing').classList.add('hidden');
+                document.getElementById('page-app').classList.remove('hidden');
+                
+                if (!map) {
+                    initMap();
+                } else {
+                    setTimeout(() => map.invalidateSize(), 200);
+                }
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
 
         function initMap() {
             map = L.map('map').setView([userLat, userLng], 13);
@@ -277,12 +430,12 @@
         function switchTab(tabName) {
             ['request', 'techs', 'jobs'].forEach(tab => {
                 document.getElementById(`tab-${tab}`).classList.add('hidden');
-                document.getElementById(`btn-${tab}`).classList.remove('bg-blue-700', 'text-white');
-                document.getElementById(`btn-${tab}`).classList.add('text-blue-200');
+                document.getElementById(`btn-${tab}`).classList.remove('bg-blue-900', 'text-white');
+                document.getElementById(`btn-${tab}`).classList.add('text-gray-600');
             });
 
             document.getElementById(`tab-${tabName}`).classList.remove('hidden');
-            document.getElementById(`btn-${tabName}`).classList.add('bg-blue-700', 'text-white');
+            document.getElementById(`btn-${tabName}`).classList.add('bg-blue-900', 'text-white');
 
             if (tabName === 'request' && map) {
                 setTimeout(() => map.invalidateSize(), 200);
@@ -316,7 +469,7 @@
             });
 
             renderTechs();
-            renderTechMarkers();
+            if (map) renderTechMarkers();
             updateServiceTasks();
             closeJoinModal();
             
@@ -348,7 +501,6 @@
 
             taskSelect.innerHTML = tasks.map(t => `<option value="${t.price}">${t.name} ($${t.price})</option>`).join('');
 
-            // Filtrar técnicos por categoría seleccionada
             const filteredTechs = technicians.filter(t => t.category === category);
             const techSelect = document.getElementById('selectedTech');
 
@@ -430,7 +582,6 @@
         }
 
         window.onload = () => {
-            initMap();
             renderTechs();
             updateServiceTasks();
         };
