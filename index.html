@@ -77,7 +77,7 @@
                 <div class="flex justify-between items-center mb-3">
                     <div>
                         <h3 class="font-bold text-gray-900 flex items-center gap-2">📍 Cobertura en Vivo</h3>
-                        <p class="text-xs text-gray-500">Técnicos calificados disponibles</p>
+                        <p class="text-xs text-gray-500">Técnicos calificados disponibles en tiempo real</p>
                     </div>
                     <button onclick="getUserLocation()" class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-blue-200 transition">
                         🎯 Mi Ubicación
@@ -160,7 +160,7 @@
         </section>
     </div>
 
-    <!-- 3. PERFIL INDIVIDUAL Y EXCLUSIVO DEL TÉCNICO AUTENTICADO -->
+    <!-- 3. PERFIL TÉCNICO AUTENTICADO -->
     <div id="page-tech-portal" class="hidden max-w-5xl mx-auto p-4 flex-grow w-full space-y-6">
         <div class="bg-gradient-to-r from-blue-900 to-indigo-900 text-white p-6 rounded-2xl shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div class="space-y-1">
@@ -172,9 +172,14 @@
                 <p id="techProfileCategory" class="text-xs text-blue-200">Especialidad: -</p>
             </div>
 
-            <div class="bg-blue-800/80 p-3 rounded-xl border border-blue-700 text-right">
-                <span class="text-xs text-amber-300 font-bold block uppercase">ID Técnico</span>
-                <span id="techProfileId" class="text-sm font-black text-white">#000</span>
+            <div class="flex items-center gap-3">
+                <button onclick="updateTechLocation(true)" class="bg-blue-800 hover:bg-blue-700 border border-blue-600 text-amber-300 text-xs font-bold px-3 py-2 rounded-xl transition flex items-center gap-1">
+                    📡 Actualizar GPS
+                </button>
+                <div class="bg-blue-800/80 p-3 rounded-xl border border-blue-700 text-right">
+                    <span class="text-xs text-amber-300 font-bold block uppercase">ID Técnico</span>
+                    <span id="techProfileId" class="text-sm font-black text-white">#000</span>
+                </div>
             </div>
         </div>
 
@@ -192,8 +197,8 @@
                 <span id="tech-rating-display" class="text-2xl font-black text-amber-500">5.0 ⭐</span>
             </div>
             <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm text-center">
-                <span class="text-xs text-gray-500 font-bold block">Estado</span>
-                <span class="inline-block mt-1 text-xs font-bold text-green-700 bg-green-100 px-3 py-1 rounded-full">● En Línea</span>
+                <span class="text-xs text-gray-500 font-bold block">Ubicación GPS</span>
+                <span id="tech-gps-status" class="inline-block mt-1 text-xs font-bold text-green-700 bg-green-100 px-3 py-1 rounded-full">● Sincronizada</span>
             </div>
         </div>
 
@@ -207,13 +212,13 @@
         </div>
     </div>
 
-    <!-- MODAL DE INGRESO POR TÉCNICO (SELECCIÓN Y PIN PROPIO) -->
+    <!-- MODAL DE INGRESO TÉCNICO -->
     <div id="techAuthModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4">
         <div class="bg-white p-6 rounded-2xl max-w-sm w-full shadow-2xl space-y-4">
             <div class="text-center">
                 <div class="text-4xl mb-1">🔐</div>
                 <h3 class="text-xl font-bold text-blue-900">Iniciar Sesión Técnico</h3>
-                <p class="text-xs text-gray-500">Selecciona tu perfil e ingresa tu PIN individual.</p>
+                <p class="text-xs text-gray-500">Selecciona tu perfil e ingresa tu PIN.</p>
             </div>
 
             <div class="space-y-3">
@@ -237,7 +242,7 @@
                     Ingresar
                 </button>
             </div>
-            <p class="text-[10px] text-gray-400 text-center">PIN por defecto para todos los perfiles de prueba: <b>1234</b></p>
+            <p class="text-[10px] text-gray-400 text-center">PIN de prueba por defecto: <b>1234</b></p>
         </div>
     </div>
 
@@ -296,14 +301,13 @@
             ]
         };
 
-        // Cada técnico posee su propio ID, PIN independiente e historial
         const technicians = [
-            { id: "TECH-001", pin: "1234", name: "Roberto Gómez", category: "Plomería", rating: "4.9 ⭐", photo: "👨‍🔧", lat: 8.9920, lng: -79.5180 },
-            { id: "TECH-002", pin: "1234", name: "Carlos Rodríguez", category: "Electricidad", rating: "5.0 ⭐", photo: "🧑‍🔧", lat: 8.9800, lng: -79.5250 },
-            { id: "TECH-003", pin: "1234", name: "Javier López", category: "Aire Acondicionado", rating: "4.8 ⭐", photo: "👨‍🏭", lat: 8.9700, lng: -79.5050 }
+            { id: "TECH-001", pin: "1234", name: "Roberto Gómez", category: "Plomería", rating: "4.9 ⭐", photo: "👨‍🔧", lat: 8.9920, lng: -79.5180, marker: null },
+            { id: "TECH-002", pin: "1234", name: "Carlos Rodríguez", category: "Electricidad", rating: "5.0 ⭐", photo: "🧑‍🔧", lat: 8.9800, lng: -79.5250, marker: null },
+            { id: "TECH-003", pin: "1234", name: "Javier López", category: "Aire Acondicionado", rating: "4.8 ⭐", photo: "👨‍🏭", lat: 8.9700, lng: -79.5050, marker: null }
         ];
 
-        let activeTechUser = null; // Guarda la sesión del técnico autenticado
+        let activeTechUser = null;
         let myOrders = [];
         let map, userMarker;
         let userLat = 8.9824, userLng = -79.5199;
@@ -318,7 +322,10 @@
             } else if (sectionName === 'app') {
                 document.getElementById('page-app').classList.remove('hidden');
                 if (!map) initMap();
-                else setTimeout(() => map.invalidateSize(), 200);
+                else {
+                    renderTechniciansOnMap();
+                    setTimeout(() => map.invalidateSize(), 200);
+                }
             } else if (sectionName === 'tech-portal') {
                 document.getElementById('page-tech-portal').classList.remove('hidden');
                 renderIndividualTechPortal();
@@ -326,7 +333,6 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // SISTEMA DE AUTENTICACIÓN INDIVIDUAL DE TÉCNICOS
         function openTechAuthModal() {
             populateTechLoginSelect();
             document.getElementById('techAuthModal').classList.remove('hidden');
@@ -349,11 +355,37 @@
             const tech = technicians.find(t => t.id === selectedId);
 
             if (tech && tech.pin === inputPin) {
-                activeTechUser = tech; // Inicia sesión el técnico específico
+                activeTechUser = tech;
                 closeTechAuthModal();
                 showSection('tech-portal');
+
+                // SOLICITAR UBICACIÓN EN TIEMPO REAL AL INICIAR SESIÓN
+                updateTechLocation();
             } else {
                 alert("PIN incorrecto para el técnico seleccionado.");
+            }
+        }
+
+        // FUNCIÓN PARA OBTENER GPS DEL TÉCNICO Y ACTUALIZAR MAPA
+        function updateTechLocation(showAlert = false) {
+            if (navigator.geolocation && activeTechUser) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        activeTechUser.lat = pos.coords.latitude;
+                        activeTechUser.lng = pos.coords.longitude;
+
+                        document.getElementById('tech-gps-status').textContent = "● Sincronizada";
+                        document.getElementById('tech-gps-status').className = "inline-block mt-1 text-xs font-bold text-green-700 bg-green-100 px-3 py-1 rounded-full";
+
+                        if (map) renderTechniciansOnMap();
+                        if (showAlert) alert("Ubicación GPS actualizada en el mapa del cliente.");
+                    },
+                    (error) => {
+                        console.warn("No se pudo obtener la ubicación GPS:", error.message);
+                        document.getElementById('tech-gps-status').textContent = "⚠️ Sin GPS";
+                        document.getElementById('tech-gps-status').className = "inline-block mt-1 text-xs font-bold text-amber-700 bg-amber-100 px-3 py-1 rounded-full";
+                    }
+                );
             }
         }
 
@@ -362,7 +394,6 @@
             showSection('landing');
         }
 
-        // DIBUJAR EL PORTAL EXCLUSIVO DEL TÉCNICO EN SESIÓN
         function renderIndividualTechPortal() {
             if (!activeTechUser) return;
 
@@ -371,7 +402,6 @@
             document.getElementById('techProfileId').textContent = activeTechUser.id;
             document.getElementById('tech-rating-display').textContent = activeTechUser.rating;
 
-            // Filtrar ÚNICAMENTE los pedidos asignados a este técnico por su ID o Nombre
             const techOrders = myOrders.filter(o => o.techId === activeTechUser.id || o.techName === activeTechUser.name);
             const completedOrders = techOrders.filter(o => o.status.includes('Completado') || o.status.includes('Aceptado'));
 
@@ -432,16 +462,24 @@
             }
         }
 
-        // MAPA Y SOLICITUD DE CLIENTE
+        // DIBUJAR MARCADORES DE TÉCNICOS EN EL MAPA
+        function renderTechniciansOnMap() {
+            if (!map) return;
+
+            technicians.forEach(tech => {
+                if (tech.marker) map.removeLayer(tech.marker);
+
+                tech.marker = L.marker([tech.lat, tech.lng]).addTo(map)
+                    .bindPopup(`<b>${tech.photo} ${tech.name}</b><br>${tech.category}`);
+            });
+        }
+
         function initMap() {
             map = L.map('map').setView([userLat, userLng], 13);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
             setUserMarker(userLat, userLng, "📍 Tu Ubicación");
-            technicians.forEach(tech => {
-                L.marker([tech.lat, tech.lng]).addTo(map)
-                    .bindPopup(`<b>${tech.photo} ${tech.name}</b><br>${tech.category}`);
-            });
+            renderTechniciansOnMap();
         }
 
         function setUserMarker(lat, lng, title) {
@@ -498,7 +536,6 @@
 
         document.getElementById('locationZone').addEventListener('change', calculateCost);
 
-        // REGISTRO DE PEDIDO ASIGNADO AL TÉCNICO SELECCIONADO
         document.getElementById('orderForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
@@ -520,8 +557,8 @@
                 zone: zoneSelect.options[zoneSelect.selectedIndex].getAttribute('data-name'),
                 category: document.getElementById('serviceCategory').value,
                 task: selectedTaskName,
-                techId: assignedTech.id,       // Vinculación por ID único
-                techName: assignedTech.name,   // Vinculación por Nombre
+                techId: assignedTech.id,
+                techName: assignedTech.name,
                 detail: document.getElementById('jobDetail').value || "Sin notas",
                 cost: calculateCost(),
                 status: "Pendiente ⏳",
@@ -559,7 +596,6 @@
             }
         }
 
-        // REGISTRO DE NUEVO TÉCNICO
         function openJoinModal() { document.getElementById('joinModal').classList.remove('hidden'); }
         function closeJoinModal() { document.getElementById('joinModal').classList.add('hidden'); }
 
@@ -576,8 +612,9 @@
                 category: category,
                 rating: "5.0 ⭐",
                 photo: "👷‍♂️",
-                lat: userLat + (Math.random() - 0.5) * 0.02,
-                lng: userLng + (Math.random() - 0.5) * 0.02
+                lat: userLat,
+                lng: userLng,
+                marker: null
             };
 
             technicians.push(newTech);
