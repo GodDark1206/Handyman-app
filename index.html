@@ -293,7 +293,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // CONFIGURACIÓN DE FIREBASE INTEGRADA
+        // CONFIGURACIÓN DE FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyAp3qEInlZ68nVW0vX4abykOx3U2PdhoXI",
             authDomain: "handyman-web-760c3.firebaseapp.com",
@@ -308,6 +308,10 @@
             firebase.initializeApp(firebaseConfig);
         }
         const db = firebase.database();
+
+        // SERVIDOR DE MAPAS CARTO (Evita error 403 de OSM)
+        const MAP_TILE_URL = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+        const MAP_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
 
         const serviceCatalog = {
             "Plomería": [
@@ -481,12 +485,15 @@
         function initTechMap() {
             if (!techMap) {
                 techMap = L.map('techMap').setView([userLat, userLng], 13);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(techMap);
+                L.tileLayer(MAP_TILE_URL, {
+                    attribution: MAP_ATTRIBUTION,
+                    subdomains: 'abcd',
+                    maxZoom: 19
+                }).addTo(techMap);
             }
             setTimeout(() => techMap.invalidateSize(), 200);
         }
 
-        // MOSTRAR SÓLO UBICACIONES DE PEDIDOS ACTIVOS EN EL MAPA
         function renderTechPortalMap() {
             if (!techMap || !activeTechUser) return;
 
@@ -497,7 +504,6 @@
                 .bindPopup(`<b>${activeTechUser.photo} Tu Posición</b><br><span class="text-xs text-green-600 font-bold">Transmitiendo GPS</span>`);
             techMapMarkers.push(techMarker);
 
-            // FILTRAR: Solo pedidos que NO estén completados y tengan coordenadas válidas
             const activeTechOrders = myOrders.filter(o => 
                 (o.techId === activeTechUser.id || o.techName === activeTechUser.name) && 
                 !o.status.includes('Completado')
@@ -570,7 +576,6 @@
             db.ref('orders/' + orderId).update({ status: "Aceptado 🚗 (En Camino)" });
         }
 
-        // LIMPIA LAS COORDENADAS GPS AL COMPLETAR LA ORDEN
         function completeJob(orderId) {
             db.ref('orders/' + orderId).update({
                 status: "Servicio Completado 🏁",
@@ -594,7 +599,11 @@
 
         function initMap() {
             map = L.map('map').setView([userLat, userLng], 13);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+            L.tileLayer(MAP_TILE_URL, {
+                attribution: MAP_ATTRIBUTION,
+                subdomains: 'abcd',
+                maxZoom: 19
+            }).addTo(map);
 
             setUserMarker(userLat, userLng, "📍 Tu Ubicación Real");
             renderTechniciansOnMap();
