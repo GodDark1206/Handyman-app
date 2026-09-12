@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Handyman Express - Soluciones Técnicas al Instante</title>
+    <title>Handyman Express - Plataforma Completa</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Leaflet CSS -->
@@ -20,31 +20,30 @@
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col">
 
-    <!-- Navegación Principal -->
+    <!-- NAVEGACIÓN PRINCIPAL -->
     <nav class="bg-blue-900 text-white p-4 shadow-xl sticky top-0 z-50">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
             <a href="#" onclick="showSection('landing')" class="text-2xl font-black flex items-center gap-2">
                 ⚡ Handyman<span class="text-amber-400">Express</span>
             </a>
             
-            <div class="flex gap-2 sm:gap-4 text-sm font-semibold items-center">
-                <button onclick="showSection('landing')" id="nav-landing" class="hover:text-amber-400 transition hidden sm:inline-block">Inicio</button>
-                <button onclick="showSection('app')" id="nav-app" class="bg-amber-500 text-gray-900 px-4 py-2 rounded-xl font-bold hover:bg-amber-400 transition shadow-md">
-                    🚀 Solicitar Técnico
+            <div class="flex gap-2 sm:gap-3 text-sm font-semibold items-center">
+                <button onclick="showSection('landing')" class="hover:text-amber-400 transition hidden md:inline-block">Inicio</button>
+                <button onclick="showSection('app')" class="bg-amber-500 text-gray-900 px-3.5 py-2 rounded-xl font-bold hover:bg-amber-400 transition shadow-md text-xs sm:text-sm">
+                    🚀 Pedir Servicio
                 </button>
-                <button onclick="openJoinModal()" class="border border-blue-400 text-blue-100 hover:bg-blue-800 px-3 py-2 rounded-xl text-xs font-semibold transition">
-                    💼 Trabaja con Nosotros
+                <button onclick="checkTechAuth()" class="bg-blue-800/80 border border-blue-600 text-amber-300 hover:bg-blue-700 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-1.5">
+                    🔒 Acceso Técnicos
                 </button>
             </div>
         </div>
     </nav>
 
     <!-- ========================================================= -->
-    <!-- 1. LANDING PAGE DE INICIO (BIENVENIDA Y QUIÉNES SOMOS) -->
+    <!-- 1. LANDING PAGE (CLIENTE) -->
     <!-- ========================================================= -->
     <div id="page-landing" class="space-y-16 pb-16">
 
-        <!-- Hero Section -->
         <section class="bg-gradient-to-b from-blue-900 via-blue-800 to-indigo-900 text-white py-20 px-4 text-center">
             <div class="max-w-4xl mx-auto space-y-6">
                 <span class="bg-blue-800/80 text-amber-300 text-xs font-bold uppercase tracking-wider px-4 py-1.5 rounded-full border border-blue-700 inline-block">
@@ -54,21 +53,20 @@
                     Plomería, Electricidad y Climatización en <span class="text-amber-400">Minutos</span>
                 </h1>
                 <p class="text-lg md:text-xl text-blue-100 max-w-2xl mx-auto font-light">
-                    Conectamos tu hogar u oficina con técnicos calificados y verificados cerca de tu ubicación. Transparencia en precios y respuesta rápida.
+                    Conectamos tu hogar u oficina con técnicos calificados cerca de tu ubicación. Transparencia en precios y atención inmediata.
                 </p>
                 <div class="pt-4 flex flex-col sm:flex-row justify-center gap-4">
                     <button onclick="showSection('app')" class="bg-amber-500 hover:bg-amber-400 text-gray-900 text-lg font-extrabold px-8 py-4 rounded-2xl shadow-xl transition transform hover:-translate-y-0.5">
                         📍 Pedir Técnico Ahora
                     </button>
-                    <a href="#about" class="bg-blue-800/60 hover:bg-blue-800 text-white font-bold px-6 py-4 rounded-2xl border border-blue-700 transition">
-                        Conoce Más
-                    </a>
+                    <button onclick="openJoinModal()" class="bg-blue-800/80 hover:bg-blue-800 text-white font-bold px-6 py-4 rounded-2xl border border-blue-700 transition">
+                        💼 ¿Eres Técnico? Únete Aquí
+                    </button>
                 </div>
             </div>
         </section>
 
-        <!-- Quiénes Somos -->
-        <section id="about" class="max-w-5xl mx-auto px-4">
+        <section class="max-w-5xl mx-auto px-4">
             <div class="grid md:grid-cols-2 gap-12 items-center">
                 <div class="space-y-4">
                     <span class="text-blue-900 font-bold text-xs uppercase tracking-widest">Sobre Nosotros</span>
@@ -107,79 +105,30 @@
             </div>
         </section>
 
-        <!-- Servicios Ofrecidos -->
-        <section class="max-w-6xl mx-auto px-4">
-            <div class="text-center mb-12 space-y-2">
-                <h2 class="text-3xl font-extrabold text-blue-900">Nuestras Especialidades</h2>
-                <p class="text-gray-500 text-sm">Selecciona el área que requiere atención en tu hogar</p>
-            </div>
-
-            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition">
-                    <div class="text-4xl mb-4">🚰</div>
-                    <h3 class="font-bold text-gray-900 text-lg mb-1">Plomería</h3>
-                    <p class="text-xs text-gray-500">Reparación de fugas, destapes, calentadores y tuberías en general.</p>
-                </div>
-                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition">
-                    <div class="text-4xl mb-4">⚡</div>
-                    <h3 class="font-bold text-gray-900 text-lg mb-1">Electricidad</h3>
-                    <p class="text-xs text-gray-500">Cortocircuitos, instalación de lámparas, abanicos y acometidas.</p>
-                </div>
-                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition">
-                    <div class="text-4xl mb-4">❄️</div>
-                    <h3 class="font-bold text-gray-900 text-lg mb-1">Aire Acondicionado</h3>
-                    <p class="text-xs text-gray-500">Mantenimiento preventivo, recarga de gas e instalación de splits.</p>
-                </div>
-                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition">
-                    <div class="text-4xl mb-4">🏠</div>
-                    <h3 class="font-bold text-gray-900 text-lg mb-1">Techos y Tejados</h3>
-                    <p class="text-xs text-gray-500">Impermeabilización, filtraciones, canales y cambio de techo.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Llamado a la acción inferior -->
-        <section class="bg-blue-900 text-white py-12 px-4 rounded-3xl max-w-5xl mx-auto text-center space-y-4">
-            <h2 class="text-3xl font-bold">¿Tienes una emergencia técnica en casa?</h2>
-            <p class="text-blue-200 text-sm max-w-xl mx-auto">Ubica en el mapa a los técnicos disponibles cerca de ti y solicita asistencia de inmediato.</p>
-            <button onclick="showSection('app')" class="bg-amber-500 hover:bg-amber-400 text-gray-900 font-extrabold px-8 py-3.5 rounded-xl shadow-lg transition">
-                🚀 Abrir Mapa y Crear Pedido
-            </button>
-        </section>
-
     </div>
 
     <!-- ========================================================= -->
-    <!-- 2. APLICACIÓN DE PEDIDOS Y MAPA (SISTEMA DE SOLICITUD) -->
+    <!-- 2. CLIENTE: APLICACIÓN DE PEDIDOS -->
     <!-- ========================================================= -->
     <div id="page-app" class="hidden max-w-5xl mx-auto p-4 flex-grow w-full space-y-6">
 
-        <!-- Pestañas internas del panel -->
         <div class="flex justify-between items-center border-b border-gray-200 pb-3">
             <div class="flex gap-2">
                 <button onclick="switchTab('request')" id="btn-request" class="px-4 py-2 rounded-xl bg-blue-900 text-white font-bold text-sm">
                     📍 Mapa & Solicitar
                 </button>
-                <button onclick="switchTab('techs')" id="btn-techs" class="px-4 py-2 rounded-xl text-gray-600 hover:bg-gray-200 font-bold text-sm">
-                    👥 Técnicos
-                </button>
                 <button onclick="switchTab('jobs')" id="btn-jobs" class="px-4 py-2 rounded-xl text-gray-600 hover:bg-gray-200 font-bold text-sm flex items-center gap-1">
-                    📋 Pedidos <span id="job-badge" class="bg-amber-500 text-gray-900 text-xs px-2 py-0.5 rounded-full font-bold hidden">0</span>
+                    📋 Mis Pedidos <span id="job-badge" class="bg-amber-500 text-gray-900 text-xs px-2 py-0.5 rounded-full font-bold hidden">0</span>
                 </button>
             </div>
-            <button onclick="showSection('landing')" class="text-xs font-bold text-gray-500 hover:text-blue-900">
-                ← Volver a Inicio
-            </button>
         </div>
 
-        <!-- PESTAÑA: SOLICITAR CON MAPA INTERACTIVO -->
         <section id="tab-request" class="space-y-6">
-            
             <div class="bg-white p-4 rounded-2xl shadow-md border border-gray-200">
                 <div class="flex justify-between items-center mb-3">
                     <div>
-                        <h3 class="font-bold text-gray-900 flex items-center gap-2">📍 Mapa de Cobertura en Vivo</h3>
-                        <p class="text-xs text-gray-500">Ubicación detectada y técnicos disponibles en tu zona</p>
+                        <h3 class="font-bold text-gray-900 flex items-center gap-2">📍 Mapa de Cobertura</h3>
+                        <p class="text-xs text-gray-500">Técnicos disponibles cercanos a tu ubicación</p>
                     </div>
                     <button onclick="getUserLocation()" class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-blue-200 transition">
                         🎯 Mi Ubicación
@@ -219,7 +168,7 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Tipo de Trabajo / Servicio</label>
+                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Tipo de Servicio</label>
                             <select id="serviceTask" onchange="calculateCost()" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
                             </select>
                         </div>
@@ -227,58 +176,120 @@
 
                     <div class="grid md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Seleccionar Técnico Cercano</label>
+                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Técnico Recomendado</label>
                             <select id="selectedTech" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Detalle Adicional (Opcional)</label>
-                            <input type="text" id="jobDetail" placeholder="Ej. Marca del equipo, piso, etc." class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Notas del Trabajo</label>
+                            <input type="text" id="jobDetail" placeholder="Ej. Filtra agua en la cocina, piso 2" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
                         </div>
                     </div>
 
                     <div class="bg-blue-50 p-4 rounded-xl border border-blue-200 flex justify-between items-center">
                         <div>
                             <span class="text-xs text-gray-500 block uppercase font-bold">Tarifa Estimada</span>
-                            <span class="text-xs text-gray-400">Servicio Seleccionado + Movilización</span>
+                            <span class="text-xs text-gray-400">Servicio + Movilización</span>
                         </div>
                         <span id="displayTotal" class="text-3xl font-black text-blue-900">$25.00</span>
                     </div>
 
-                    <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-gray-900 py-3 rounded-xl font-bold text-lg shadow-lg transition transform active:scale-95">
+                    <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-gray-900 py-3 rounded-xl font-bold text-lg shadow-lg transition">
                         🚀 Invocar Técnico Cercano
                     </button>
                 </form>
             </div>
         </section>
 
-        <!-- PESTAÑA: DIRECTORIO DE TÉCNICOS -->
-        <section id="tab-techs" class="hidden space-y-4">
-            <h2 class="text-xl font-bold text-blue-900">👥 Técnicos Activos en el Radar</h2>
-            <div id="techsGrid" class="grid md:grid-cols-2 gap-4"></div>
-        </section>
-
-        <!-- PESTAÑA: HISTORIAL DE PEDIDOS -->
         <section id="tab-jobs" class="hidden space-y-4">
-            <h2 class="text-xl font-bold text-blue-900">📋 Pedidos Activos</h2>
+            <h2 class="text-xl font-bold text-blue-900">📋 Estado de tus Pedidos</h2>
             <div id="jobsList" class="space-y-3">
                 <div class="bg-white p-8 text-center rounded-2xl border border-gray-200 text-gray-400">
-                    Aún no has solicitado ningún técnico en el mapa.
+                    Aún no has realizado ninguna solicitud de servicio.
                 </div>
             </div>
         </section>
 
     </div>
 
-    <!-- Pie de página -->
-    <footer class="bg-gray-900 text-gray-400 py-8 text-center text-xs mt-auto border-t border-gray-800">
-        <div class="max-w-4xl mx-auto space-y-2">
-            <p class="font-bold text-gray-300">Handyman Express © 2026 - Soluciones Técnicas a Domicilio</p>
-            <p>Panamá, República de Panamá</p>
+    <!-- ========================================================= -->
+    <!-- 3. APARTADO EXCLUSIVO PROTEGIDO PARA TÉCNICOS -->
+    <!-- ========================================================= -->
+    <div id="page-tech-portal" class="hidden max-w-5xl mx-auto p-4 flex-grow w-full space-y-6">
+
+        <div class="bg-gradient-to-r from-blue-900 to-indigo-900 text-white p-6 rounded-2xl shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="bg-amber-400 text-gray-900 text-xs font-black px-2.5 py-1 rounded-md uppercase">Panel Exclusivo Técnicos</span>
+                    <button onclick="logoutTech()" class="text-xs text-blue-300 hover:text-white underline">Cerrar Sesión</button>
+                </div>
+                <h2 class="text-2xl font-black mt-1">Consola de Recepción de Trabajos</h2>
+                <p class="text-xs text-blue-200">Acepta servicios entrantes y gestiona tus ingresos en tiempo real.</p>
+            </div>
+            
+            <div class="bg-blue-800/80 p-3 rounded-xl border border-blue-700 w-full md:w-auto">
+                <label class="block text-xs font-bold text-amber-300 uppercase mb-1">Mi Perfil Técnico:</label>
+                <select id="activeTechSelector" onchange="updateTechPortalUI()" class="w-full bg-blue-900 text-white font-bold p-2 rounded-lg border border-blue-600 text-sm focus:outline-none">
+                </select>
+            </div>
         </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm text-center">
+                <span class="text-xs text-gray-500 font-bold block">Ganancias del Día</span>
+                <span id="tech-earnings" class="text-2xl font-black text-green-600">$0.00</span>
+            </div>
+            <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm text-center">
+                <span class="text-xs text-gray-500 font-bold block">Trabajos Aceptados</span>
+                <span id="tech-accepted-count" class="text-2xl font-black text-blue-900">0</span>
+            </div>
+            <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm text-center">
+                <span class="text-xs text-gray-500 font-bold block">Calificación</span>
+                <span id="tech-rating-display" class="text-2xl font-black text-amber-500">5.0 ⭐</span>
+            </div>
+            <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm text-center">
+                <span class="text-xs text-gray-500 font-bold block">Estado Radar</span>
+                <span class="inline-block mt-1 text-xs font-bold text-green-700 bg-green-100 px-3 py-1 rounded-full">● En Línea</span>
+            </div>
+        </div>
+
+        <div class="space-y-4">
+            <h3 class="text-lg font-bold text-blue-900">🔔 Solicitudes Entrantes</h3>
+            <div id="techIncomingJobs" class="space-y-3">
+                <div class="bg-white p-8 text-center rounded-2xl border border-gray-200 text-gray-400">
+                    No hay solicitudes pendientes en este momento.
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer class="bg-gray-900 text-gray-400 py-8 text-center text-xs mt-auto border-t border-gray-800">
+        <p class="font-bold text-gray-300">Handyman Express © 2026 - Soluciones Técnicas a Domicilio</p>
     </footer>
 
-    <!-- MODAL TRABAJA CON NOSOTROS -->
+    <!-- MODAL INGRESO DE TÉCNICO (PIN / CLAVE DE ACCESO) -->
+    <div id="techAuthModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4">
+        <div class="bg-white p-6 rounded-2xl max-w-sm w-full shadow-2xl space-y-4 text-center">
+            <div class="text-4xl">🔐</div>
+            <h3 class="text-xl font-bold text-blue-900">Acceso Restringido Técnicos</h3>
+            <p class="text-xs text-gray-500">Ingresa tu código PIN para entrar a la consola de trabajos.</p>
+
+            <input type="password" id="techPinInput" placeholder="Código PIN (Ej. 1234)" class="w-full text-center text-xl tracking-widest p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+            <div class="flex gap-2">
+                <button onclick="closeTechAuthModal()" class="w-1/2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2.5 rounded-xl text-sm">
+                    Cancelar
+                </button>
+                <button onclick="validateTechPin()" class="w-1/2 bg-blue-900 hover:bg-blue-800 text-white font-bold py-2.5 rounded-xl text-sm">
+                    Entrar
+                </button>
+            </div>
+            <p class="text-[10px] text-gray-400">PIN de prueba demostrativo: <b>1234</b></p>
+        </div>
+    </div>
+
+    <!-- MODAL REGISTRO NUEVO TÉCNICO -->
     <div id="joinModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
         <div class="bg-white p-6 rounded-2xl max-w-md w-full shadow-2xl space-y-4">
             <div class="flex justify-between items-center">
@@ -298,7 +309,7 @@
                 <input type="tel" id="techApplicantPhone" required placeholder="Número de WhatsApp (+507...)" class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 
                 <button type="submit" class="w-full bg-blue-900 hover:bg-blue-800 text-white py-3 rounded-xl font-bold text-sm transition">
-                    Enviar Solicitud de Registro
+                    Enviar Solicitud
                 </button>
             </form>
         </div>
@@ -312,186 +323,127 @@
                 { name: "Reparación de Fuga / Grifo", price: 25 },
                 { name: "Destape de Tuberías / Drenaje", price: 40 },
                 { name: "Instalación de Calentador de Agua", price: 85 },
-                { name: "Instalación de Bombas de Agua / Hidroneumático", price: 150 },
-                { name: "Remodelación / Reemplazo de Tubería Completa", price: 300 }
+                { name: "Instalación de Bombas de Agua / Hidroneumático", price: 150 }
             ],
             "Electricidad": [
                 { name: "Reparación de Cortocircuito / Jamón", price: 30 },
                 { name: "Instalación de Lámparas / Abanicos de Techo", price: 35 },
-                { name: "Cableado / Puntos Nuevos de Tomacorriente", price: 60 },
-                { name: "Instalación de Panel Eléctrico / Breakers", price: 180 },
-                { name: "Acometida / Cableado Trifásico Completo", price: 450 }
+                { name: "Cableado / Puntos Nuevos de Tomacorriente", price: 60 }
             ],
             "Aire Acondicionado": [
                 { name: "Mantenimiento Preventivo / Limpieza Split", price: 35 },
                 { name: "Recarga de Gas Refrigerante", price: 65 },
-                { name: "Reparación de Tarjeta / Compresor", price: 110 },
-                { name: "Instalación Completa Split (12k-24k BTU)", price: 140 },
-                { name: "Instalación Sistema Central / Inverter Comercial", price: 500 }
+                { name: "Instalación Completa Split (12k-24k BTU)", price: 140 }
             ],
             "Techos y Tejados": [
                 { name: "Reparación de Goteras y Filtraciones", price: 60 },
                 { name: "Impermeabilización de Techo / Losa", price: 180 },
-                { name: "Limpieza y Pintura Antioxidante de Techo", price: 220 },
-                { name: "Instalación de Canales de Lluvia", price: 280 },
-                { name: "Cambio / Instalación de Techo Nuevo Completo", price: 750 }
+                { name: "Instalación de Canales de Lluvia", price: 280 }
             ]
         };
 
         const technicians = [
             { id: 1, name: "Roberto Gómez", category: "Plomería", rating: "4.9 ⭐", jobsDone: 142, status: "Disponible", photo: "👨‍🔧", lat: 8.9920, lng: -79.5180 },
             { id: 2, name: "Carlos Rodríguez", category: "Electricidad", rating: "5.0 ⭐", jobsDone: 98, status: "Disponible", photo: "🧑‍🔧", lat: 8.9800, lng: -79.5250 },
-            { id: 3, name: "Javier López", category: "Aire Acondicionado", rating: "4.8 ⭐", jobsDone: 76, status: "En Ruta", photo: "👨‍🏭", lat: 8.9700, lng: -79.5050 },
-            { id: 4, name: "Miguel Ángel", category: "Techos y Tejados", rating: "4.9 ⭐", jobsDone: 115, status: "Disponible", photo: "👷‍♂️", lat: 9.0050, lng: -79.5100 }
+            { id: 3, name: "Javier López", category: "Aire Acondicionado", rating: "4.8 ⭐", jobsDone: 76, status: "En Ruta", photo: "👨‍🏭", lat: 8.9700, lng: -79.5050 }
         ];
 
         let myOrders = [];
         let map;
         let userMarker;
-        let techMarkers = [];
+        let isTechAuthenticated = false;
 
         let userLat = 8.9824;
         let userLng = -79.5199;
 
-        // NAVEGACIÓN ENTRE VISTAS (LANDING / APP)
+        // CONTROL DE SECCIONES
         function showSection(sectionName) {
+            document.getElementById('page-landing').classList.add('hidden');
+            document.getElementById('page-app').classList.add('hidden');
+            document.getElementById('page-tech-portal').classList.add('hidden');
+
             if (sectionName === 'landing') {
                 document.getElementById('page-landing').classList.remove('hidden');
-                document.getElementById('page-app').classList.add('hidden');
-            } else {
-                document.getElementById('page-landing').classList.add('hidden');
+            } else if (sectionName === 'app') {
                 document.getElementById('page-app').classList.remove('hidden');
-                
                 if (!map) {
                     initMap();
                 } else {
                     setTimeout(() => map.invalidateSize(), 200);
                 }
+            } else if (sectionName === 'tech-portal') {
+                document.getElementById('page-tech-portal').classList.remove('hidden');
+                updateTechPortalUI();
             }
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // CONTROL DE ACCESO TÉCNICO (PROTECCIÓN CON PIN)
+        function checkTechAuth() {
+            if (isTechAuthenticated) {
+                showSection('tech-portal');
+            } else {
+                document.getElementById('techAuthModal').classList.remove('hidden');
+            }
+        }
+
+        function closeTechAuthModal() {
+            document.getElementById('techAuthModal').classList.add('hidden');
+            document.getElementById('techPinInput').value = '';
+        }
+
+        function validateTechPin() {
+            const pin = document.getElementById('techPinInput').value;
+            if (pin === "1234") { // PIN clave por defecto
+                isTechAuthenticated = true;
+                closeTechAuthModal();
+                showSection('tech-portal');
+            } else {
+                alert("PIN incorrecto. Intenta con 1234");
+            }
+        }
+
+        function logoutTech() {
+            isTechAuthenticated = false;
+            showSection('landing');
+        }
+
         function initMap() {
             map = L.map('map').setView([userLat, userLng], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(map);
-
-            setTimeout(() => { map.invalidateSize(); }, 300);
-
-            setUserMarker(userLat, userLng, "📍 Tu Ubicación Actual");
-            renderTechMarkers();
+            setUserMarker(userLat, userLng, "📍 Tu Ubicación");
+            technicians.forEach(tech => {
+                L.marker([tech.lat, tech.lng]).addTo(map)
+                    .bindPopup(`<b>${tech.photo} ${tech.name}</b><br>${tech.category}`);
+            });
         }
 
         function setUserMarker(lat, lng, title) {
             if (userMarker) map.removeLayer(userMarker);
-
-            userMarker = L.marker([lat, lng]).addTo(map)
-                .bindPopup(`<b>${title}</b>`)
-                .openPopup();
-
-            map.setView([lat, lng], 13);
+            userMarker = L.marker([lat, lng]).addTo(map).bindPopup(`<b>${title}</b>`).openPopup();
         }
 
         function getUserLocation() {
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        userLat = position.coords.latitude;
-                        userLng = position.coords.longitude;
-                        setUserMarker(userLat, userLng, "📍 Tu Ubicación (GPS Detectado)");
-                    },
-                    () => {
-                        alert("Mostrando ubicación predeterminada en Panamá.");
-                    }
-                );
+                navigator.geolocation.getCurrentPosition((pos) => {
+                    userLat = pos.coords.latitude;
+                    userLng = pos.coords.longitude;
+                    setUserMarker(userLat, userLng, "📍 Ubicación Detectada");
+                });
             }
         }
 
-        function renderTechMarkers() {
-            techMarkers.forEach(m => map.removeLayer(m));
-            techMarkers = [];
-
-            technicians.forEach(tech => {
-                const marker = L.marker([tech.lat, tech.lng]).addTo(map)
-                    .bindPopup(`
-                        <div style="text-align:center;">
-                            <b style="font-size:14px;">${tech.photo} ${tech.name}</b><br>
-                            <span style="color:#2563eb; font-weight:bold;">${tech.category}</span><br>
-                            <small>${tech.rating} • ${tech.status}</small>
-                        </div>
-                    `);
-                techMarkers.push(marker);
-            });
-        }
-
         function switchTab(tabName) {
-            ['request', 'techs', 'jobs'].forEach(tab => {
+            ['request', 'jobs'].forEach(tab => {
                 document.getElementById(`tab-${tab}`).classList.add('hidden');
                 document.getElementById(`btn-${tab}`).classList.remove('bg-blue-900', 'text-white');
-                document.getElementById(`btn-${tab}`).classList.add('text-gray-600');
             });
 
             document.getElementById(`tab-${tabName}`).classList.remove('hidden');
             document.getElementById(`btn-${tabName}`).classList.add('bg-blue-900', 'text-white');
 
-            if (tabName === 'request' && map) {
-                setTimeout(() => map.invalidateSize(), 200);
-            }
-        }
-
-        function openJoinModal() {
-            document.getElementById('joinModal').classList.remove('hidden');
-        }
-
-        function closeJoinModal() {
-            document.getElementById('joinModal').classList.add('hidden');
-        }
-
-        document.getElementById('techApplyForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const name = document.getElementById('techApplicantName').value;
-            const cat = document.getElementById('techApplicantCategory').value;
-            
-            technicians.push({
-                id: Date.now(),
-                name: name,
-                category: cat,
-                rating: "5.0 ⭐",
-                jobsDone: 0,
-                status: "Disponible",
-                photo: "👷‍♂️",
-                lat: userLat + (Math.random() - 0.5) * 0.02,
-                lng: userLng + (Math.random() - 0.5) * 0.02
-            });
-
-            renderTechs();
-            if (map) renderTechMarkers();
-            updateServiceTasks();
-            closeJoinModal();
-            
-            alert(`¡Bienvenido/a ${name}! Te has registrado activamente como técnico.`);
-            this.reset();
-        });
-
-        function renderTechs() {
-            const container = document.getElementById('techsGrid');
-            container.innerHTML = technicians.map(tech => `
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200 flex items-center justify-between">
-                    <div class="flex items-center gap-4">
-                        <span class="text-4xl bg-blue-50 p-3 rounded-2xl">${tech.photo}</span>
-                        <div>
-                            <h3 class="font-bold text-gray-900">${tech.name}</h3>
-                            <p class="text-xs text-gray-500">${tech.category} • ${tech.jobsDone} trabajos</p>
-                            <span class="text-xs font-bold ${tech.status === 'Disponible' ? 'text-green-600' : 'text-amber-600'}">${tech.status}</span>
-                        </div>
-                    </div>
-                    <span class="text-sm font-bold text-amber-500">${tech.rating}</span>
-                </div>
-            `).join('');
+            if (tabName === 'request' && map) setTimeout(() => map.invalidateSize(), 200);
         }
 
         function updateServiceTasks() {
@@ -504,11 +456,9 @@
             const filteredTechs = technicians.filter(t => t.category === category);
             const techSelect = document.getElementById('selectedTech');
 
-            if (filteredTechs.length > 0) {
-                techSelect.innerHTML = filteredTechs.map(t => `<option value="${t.name}">${t.name} (${t.rating})</option>`).join('');
-            } else {
-                techSelect.innerHTML = `<option value="Técnico General">Asignar Técnico Disponible</option>`;
-            }
+            techSelect.innerHTML = filteredTechs.length > 0 
+                ? filteredTechs.map(t => `<option value="${t.name}">${t.name} (${t.rating})</option>`).join('')
+                : `<option value="Técnico General">Asignar Disponible</option>`;
 
             calculateCost();
         }
@@ -523,6 +473,7 @@
 
         document.getElementById('locationZone').addEventListener('change', calculateCost);
 
+        // PEDIDOS CLIENTE
         document.getElementById('orderForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
@@ -537,9 +488,9 @@
                 category: document.getElementById('serviceCategory').value,
                 task: selectedTaskName,
                 tech: document.getElementById('selectedTech').value,
-                detail: document.getElementById('jobDetail').value || "Sin observaciones adicionales",
+                detail: document.getElementById('jobDetail').value || "Sin observaciones",
                 cost: calculateCost(),
-                status: "Técnico asignado en mapa 🚗",
+                status: "Pendiente ⏳",
                 date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             };
 
@@ -559,31 +510,99 @@
                 badge.classList.remove('hidden');
 
                 jobsList.innerHTML = myOrders.map(order => `
-                    <div class="bg-white p-5 rounded-2xl shadow-md border-l-4 border-amber-500 flex justify-between items-center">
+                    <div class="bg-white p-5 rounded-2xl shadow-md border-l-4 ${order.status.includes('Completado') ? 'border-green-500' : 'border-amber-500'} flex justify-between items-center">
                         <div>
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="text-xs font-bold bg-blue-100 text-blue-900 px-2 py-0.5 rounded">Pedido #${order.id}</span>
-                                <span class="text-xs text-gray-400">${order.date}</span>
-                            </div>
+                            <span class="text-xs font-bold bg-blue-100 text-blue-900 px-2 py-0.5 rounded">Pedido #${order.id}</span>
                             <h4 class="font-bold text-gray-900">${order.category}: ${order.task}</h4>
-                            <p class="text-xs text-gray-600">👤 Técnico: ${order.tech} • 📍 ${order.zone}</p>
-                            <p class="text-xs text-gray-400 italic">Notas: "${order.detail}"</p>
-                            <span class="inline-block mt-2 text-xs font-bold text-green-600 bg-green-50 px-2.5 py-1 rounded-full">${order.status}</span>
+                            <p class="text-xs text-gray-600">👤 Técnico: <b>${order.tech}</b> • 📍 ${order.zone}</p>
+                            <span class="inline-block mt-2 text-xs font-bold px-2.5 py-1 rounded-full ${order.status.includes('Completado') ? 'text-green-700 bg-green-100' : 'text-amber-700 bg-amber-100'}">${order.status}</span>
                         </div>
                         <div class="text-right">
                             <span class="text-xl font-extrabold text-blue-900 block">$${order.cost.toFixed(2)}</span>
-                            <a href="https://wa.me/50760000000?text=Hola,%20seguimiento%20al%20pedido%20%23${order.id}" target="_blank" class="inline-block mt-2 text-xs bg-green-500 text-white font-bold px-3 py-1.5 rounded-lg hover:bg-green-600 transition">
-                                💬 Contactar
-                            </a>
                         </div>
                     </div>
                 `).join('');
             }
         }
 
+        // LÓGICA PORTAL TÉCNICO
+        function populateTechSelector() {
+            const select = document.getElementById('activeTechSelector');
+            select.innerHTML = technicians.map(t => `<option value="${t.name}">${t.photo} ${t.name} (${t.category})</option>`).join('');
+        }
+
+        function updateTechPortalUI() {
+            const currentTechName = document.getElementById('activeTechSelector').value;
+            const relevantJobs = myOrders.filter(o => o.tech === currentTechName || o.tech === "Técnico General");
+            const acceptedJobs = relevantJobs.filter(o => o.status.includes('Aceptado') || o.status.includes('Completado'));
+            
+            const totalEarned = acceptedJobs.reduce((sum, o) => sum + o.cost, 0);
+
+            document.getElementById('tech-earnings').textContent = `$${totalEarned.toFixed(2)}`;
+            document.getElementById('tech-accepted-count').textContent = acceptedJobs.length;
+
+            const container = document.getElementById('techIncomingJobs');
+
+            if (relevantJobs.length === 0) {
+                container.innerHTML = `<div class="bg-white p-8 text-center rounded-2xl border border-gray-200 text-gray-400">Sin trabajos pendientes para <b>${currentTechName}</b>.</div>`;
+                return;
+            }
+
+            container.innerHTML = relevantJobs.map(job => `
+                <div class="bg-white p-5 rounded-2xl shadow-md border-l-4 ${job.status.includes('Completado') ? 'border-green-500' : 'border-blue-600'} flex justify-between items-center">
+                    <div>
+                        <span class="text-xs font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded">Pedido #${job.id}</span>
+                        <h4 class="text-lg font-bold text-gray-900">${job.task}</h4>
+                        <p class="text-xs text-gray-600">👤 Cliente: <b>${job.client}</b> • 📍 ${job.zone}</p>
+                        <p class="text-xs text-gray-500 italic">"${job.detail}"</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-xl font-black text-blue-900 block mb-2">$${job.cost.toFixed(2)}</span>
+                        ${job.status.includes('Pendiente') ? `
+                            <button onclick="acceptJob('${job.id}')" class="bg-green-600 hover:bg-green-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl">✅ Aceptar</button>
+                        ` : job.status.includes('Aceptado') ? `
+                            <button onclick="completeJob('${job.id}')" class="bg-blue-900 hover:bg-blue-800 text-white text-xs font-bold px-3 py-1.5 rounded-xl">🏁 Finalizar</button>
+                        ` : `
+                            <span class="text-xs font-bold text-green-600">✨ Listo</span>
+                        `}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function acceptJob(orderId) {
+            const currentTechName = document.getElementById('activeTechSelector').value;
+            const order = myOrders.find(o => o.id === orderId);
+            if (order) {
+                order.status = "Aceptado 🚗 (En Camino)";
+                order.tech = currentTechName;
+                updateOrdersUI();
+                updateTechPortalUI();
+            }
+        }
+
+        function completeJob(orderId) {
+            const order = myOrders.find(o => o.id === orderId);
+            if (order) {
+                order.status = "Servicio Completado 🏁";
+                updateOrdersUI();
+                updateTechPortalUI();
+            }
+        }
+
+        function openJoinModal() { document.getElementById('joinModal').classList.remove('hidden'); }
+        function closeJoinModal() { document.getElementById('joinModal').classList.add('hidden'); }
+
+        document.getElementById('techApplyForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert("Solicitud recibida. Te contactaremos por WhatsApp.");
+            closeJoinModal();
+            this.reset();
+        });
+
         window.onload = () => {
-            renderTechs();
             updateServiceTasks();
+            populateTechSelector();
         };
     </script>
 </body>
