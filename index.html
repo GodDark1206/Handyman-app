@@ -154,7 +154,7 @@
             <h2 class="text-xl font-bold text-blue-900">📋 Mis Solicitudes</h2>
             <div id="jobsList" class="space-y-3">
                 <div class="bg-white p-8 text-center rounded-2xl border border-gray-200 text-gray-400">
-                    Aún no has enviado ninguna solicitud.
+                    Aún no has enviado ninguna solicitud desde este dispositivo.
                 </div>
             </div>
         </section>
@@ -308,6 +308,13 @@
             firebase.initializeApp(firebaseConfig);
         }
         const db = firebase.database();
+
+        // IDENTIFICADOR ÚNICO DE DISPOSITIVO CLIENTE
+        let myClientId = localStorage.getItem('handyman_client_id');
+        if (!myClientId) {
+            myClientId = 'CLIENT-' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('handyman_client_id', myClientId);
+        }
 
         // SERVIDOR DE MAPAS CARTO
         const MAP_TILE_URL = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
@@ -494,20 +501,16 @@
             setTimeout(() => techMap.invalidateSize(), 200);
         }
 
-        // FUNCIÓN MODIFICADA: Limpia las marcas antiguas y excluye pedidos completados
         function renderTechPortalMap() {
             if (!techMap || !activeTechUser) return;
 
-            // Limpiar todas las marcas previas
             techMapMarkers.forEach(m => techMap.removeLayer(m));
             techMapMarkers = [];
 
-            // Marca del técnico
             const techMarker = L.marker([activeTechUser.lat, activeTechUser.lng]).addTo(techMap)
                 .bindPopup(`<b>${activeTechUser.photo} Tu Posición</b><br><span class="text-xs text-green-600 font-bold">Transmitiendo GPS</span>`);
             techMapMarkers.push(techMarker);
 
-            // Filtrar SOLO pedidos activos (Pendiente o Aceptado)
             const activeTechOrders = myOrders.filter(o => 
                 (o.techId === activeTechUser.id || o.techName === activeTechUser.name) && 
                 !o.status.includes('Completado')
@@ -580,7 +583,6 @@
             db.ref('orders/' + orderId).update({ status: "Aceptado 🚗 (En Camino)" });
         }
 
-        // FUNCIÓN MODIFICADA: Elimina explícitamente las coordenadas del cliente
         function completeJob(orderId) {
             db.ref('orders/' + orderId).update({
                 status: "Servicio Completado 🏁",
@@ -701,6 +703,7 @@
             const orderId = Date.now().toString().slice(-4);
             const newOrder = {
                 id: orderId,
+                clientId: myClientId, // ID único del cliente que realiza el pedido
                 client: document.getElementById('clientName').value,
                 zone: selectedOption.getAttribute('data-name'),
                 clientLat: clientLat,
@@ -727,16 +730,20 @@
                 });
         });
 
+        // VISTA PRIVADA DE PEDIDOS PARA CADA CLIENTE
         function updateOrdersUI() {
             const badge = document.getElementById('job-badge');
             const jobsList = document.getElementById('jobsList');
             if(!badge || !jobsList) return;
 
-            if (myOrders.length > 0) {
-                badge.textContent = myOrders.length;
+            // Filtrar unicamente los pedidos asociados al clientId de esta sesión
+            const clientOnlyOrders = myOrders.filter(o => o.clientId === myClientId);
+
+            if (clientOnlyOrders.length > 0) {
+                badge.textContent = clientOnlyOrders.length;
                 badge.classList.remove('hidden');
 
-                jobsList.innerHTML = myOrders.map(order => `
+                jobsList.innerHTML = clientOnlyOrders.map(order => `
                     <div class="bg-white p-5 rounded-2xl shadow-md border-l-4 ${order.status.includes('Completado') ? 'border-green-500' : 'border-amber-500'} flex justify-between items-center">
                         <div>
                             <span class="text-xs font-bold bg-blue-100 text-blue-900 px-2 py-0.5 rounded">Pedido #${order.id}</span>
@@ -749,6 +756,13 @@
                         </div>
                     </div>
                 `).join('');
+            } else {
+                badge.classList.add('hidden');
+                jobsList.innerHTML = `
+                    <div class="bg-white p-8 text-center rounded-2xl border border-gray-200 text-gray-400">
+                        Aún no has enviado ninguna solicitud desde este dispositivo.
+                    </div>
+                `;
             }
         }
 
