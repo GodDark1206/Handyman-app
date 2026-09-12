@@ -3,18 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Handyman Express - Plataforma Completa</title>
+    <title>Handyman Express - Plataforma Multi-Técnico</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        #map { 
-            height: 380px; 
-            width: 100%; 
-            border-radius: 1rem; 
-            z-index: 1; 
-        }
+        #map { height: 380px; width: 100%; border-radius: 1rem; z-index: 1; }
         html { scroll-behavior: smooth; }
     </style>
 </head>
@@ -32,18 +27,15 @@
                 <button onclick="showSection('app')" class="bg-amber-500 text-gray-900 px-3.5 py-2 rounded-xl font-bold hover:bg-amber-400 transition shadow-md text-xs sm:text-sm">
                     🚀 Pedir Servicio
                 </button>
-                <button onclick="checkTechAuth()" class="bg-blue-800/80 border border-blue-600 text-amber-300 hover:bg-blue-700 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-1.5">
-                    🔒 Acceso Técnicos
+                <button onclick="openTechAuthModal()" class="bg-blue-800/80 border border-blue-600 text-amber-300 hover:bg-blue-700 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-1.5">
+                    🔒 Portal Técnico
                 </button>
             </div>
         </div>
     </nav>
 
-    <!-- ========================================================= -->
-    <!-- 1. LANDING PAGE (CLIENTE) -->
-    <!-- ========================================================= -->
+    <!-- 1. LANDING PAGE -->
     <div id="page-landing" class="space-y-16 pb-16">
-
         <section class="bg-gradient-to-b from-blue-900 via-blue-800 to-indigo-900 text-white py-20 px-4 text-center">
             <div class="max-w-4xl mx-auto space-y-6">
                 <span class="bg-blue-800/80 text-amber-300 text-xs font-bold uppercase tracking-wider px-4 py-1.5 rounded-full border border-blue-700 inline-block">
@@ -53,10 +45,10 @@
                     Plomería, Electricidad y Climatización en <span class="text-amber-400">Minutos</span>
                 </h1>
                 <p class="text-lg md:text-xl text-blue-100 max-w-2xl mx-auto font-light">
-                    Conectamos tu hogar u oficina con técnicos calificados cerca de tu ubicación. Transparencia en precios y atención inmediata.
+                    Conectamos tu hogar u oficina con técnicos calificados cerca de tu ubicación.
                 </p>
                 <div class="pt-4 flex flex-col sm:flex-row justify-center gap-4">
-                    <button onclick="showSection('app')" class="bg-amber-500 hover:bg-amber-400 text-gray-900 text-lg font-extrabold px-8 py-4 rounded-2xl shadow-xl transition transform hover:-translate-y-0.5">
+                    <button onclick="showSection('app')" class="bg-amber-500 hover:bg-amber-400 text-gray-900 text-lg font-extrabold px-8 py-4 rounded-2xl shadow-xl transition">
                         📍 Pedir Técnico Ahora
                     </button>
                     <button onclick="openJoinModal()" class="bg-blue-800/80 hover:bg-blue-800 text-white font-bold px-6 py-4 rounded-2xl border border-blue-700 transition">
@@ -65,53 +57,10 @@
                 </div>
             </div>
         </section>
-
-        <section class="max-w-5xl mx-auto px-4">
-            <div class="grid md:grid-cols-2 gap-12 items-center">
-                <div class="space-y-4">
-                    <span class="text-blue-900 font-bold text-xs uppercase tracking-widest">Sobre Nosotros</span>
-                    <h2 class="text-3xl font-extrabold text-gray-900">Tu red confiable de asistencia técnica profesional</h2>
-                    <p class="text-gray-600 leading-relaxed">
-                        Nacimos para resolver las emergencias del hogar sin complicaciones. Nos encargamos de conectar directamente a clientes que necesitan soluciones rápidas en plomería, electricidad, aire acondicionado y mantenimiento de techos con especialistas locales.
-                    </p>
-                    <div class="grid grid-cols-2 gap-4 pt-4">
-                        <div class="border-l-4 border-amber-500 pl-4">
-                            <span class="block text-2xl font-black text-blue-900">+500</span>
-                            <span class="text-xs text-gray-500">Servicios Realizados</span>
-                        </div>
-                        <div class="border-l-4 border-amber-500 pl-4">
-                            <span class="block text-2xl font-black text-blue-900">4.9 ⭐</span>
-                            <span class="text-xs text-gray-500">Calificación Promedio</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-gradient-to-tr from-blue-100 to-amber-50 p-8 rounded-3xl border border-blue-100 space-y-4">
-                    <h3 class="text-xl font-bold text-blue-900">¿Por qué elegirnos?</h3>
-                    <ul class="space-y-3 text-sm text-gray-700">
-                        <li class="flex items-center gap-3">
-                            <span class="bg-blue-900 text-amber-400 font-bold p-1 rounded-full text-xs">✓</span>
-                            Técnicos verificados con perfil e historial.
-                        </li>
-                        <li class="flex items-center gap-3">
-                            <span class="bg-blue-900 text-amber-400 font-bold p-1 rounded-full text-xs">✓</span>
-                            Ubicación en tiempo real en mapa interactivo.
-                        </li>
-                        <li class="flex items-center gap-3">
-                            <span class="bg-blue-900 text-amber-400 font-bold p-1 rounded-full text-xs">✓</span>
-                            Precios claros desde el primer clic.
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
     </div>
 
-    <!-- ========================================================= -->
     <!-- 2. CLIENTE: APLICACIÓN DE PEDIDOS -->
-    <!-- ========================================================= -->
     <div id="page-app" class="hidden max-w-5xl mx-auto p-4 flex-grow w-full space-y-6">
-
         <div class="flex justify-between items-center border-b border-gray-200 pb-3">
             <div class="flex gap-2">
                 <button onclick="switchTab('request')" id="btn-request" class="px-4 py-2 rounded-xl bg-blue-900 text-white font-bold text-sm">
@@ -127,8 +76,8 @@
             <div class="bg-white p-4 rounded-2xl shadow-md border border-gray-200">
                 <div class="flex justify-between items-center mb-3">
                     <div>
-                        <h3 class="font-bold text-gray-900 flex items-center gap-2">📍 Mapa de Cobertura</h3>
-                        <p class="text-xs text-gray-500">Técnicos disponibles cercanos a tu ubicación</p>
+                        <h3 class="font-bold text-gray-900 flex items-center gap-2">📍 Cobertura en Vivo</h3>
+                        <p class="text-xs text-gray-500">Técnicos calificados disponibles</p>
                     </div>
                     <button onclick="getUserLocation()" class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-blue-200 transition">
                         🎯 Mi Ubicación
@@ -138,7 +87,7 @@
             </div>
 
             <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-200">
-                <h2 class="text-xl font-bold text-blue-900 mb-4">🚗 Configura tu Pedido</h2>
+                <h2 class="text-xl font-bold text-blue-900 mb-4">🚗 Solicitar Servicio</h2>
 
                 <form id="orderForm" class="space-y-4">
                     <div class="grid md:grid-cols-2 gap-4">
@@ -176,13 +125,13 @@
 
                     <div class="grid md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Técnico Recomendado</label>
+                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Seleccionar Técnico Especialista</label>
                             <select id="selectedTech" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
                             </select>
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Notas del Trabajo</label>
-                            <input type="text" id="jobDetail" placeholder="Ej. Filtra agua en la cocina, piso 2" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <input type="text" id="jobDetail" placeholder="Ej. Fuga en lavamanos, piso 3" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
                         </div>
                     </div>
 
@@ -195,48 +144,43 @@
                     </div>
 
                     <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-gray-900 py-3 rounded-xl font-bold text-lg shadow-lg transition">
-                        🚀 Invocar Técnico Cercano
+                        🚀 Enviar Solicitud Directa
                     </button>
                 </form>
             </div>
         </section>
 
         <section id="tab-jobs" class="hidden space-y-4">
-            <h2 class="text-xl font-bold text-blue-900">📋 Estado de tus Pedidos</h2>
+            <h2 class="text-xl font-bold text-blue-900">📋 Mis Solicitudes</h2>
             <div id="jobsList" class="space-y-3">
                 <div class="bg-white p-8 text-center rounded-2xl border border-gray-200 text-gray-400">
-                    Aún no has realizado ninguna solicitud de servicio.
+                    Aún no has enviado ninguna solicitud.
                 </div>
             </div>
         </section>
-
     </div>
 
-    <!-- ========================================================= -->
-    <!-- 3. APARTADO EXCLUSIVO PROTEGIDO PARA TÉCNICOS -->
-    <!-- ========================================================= -->
+    <!-- 3. PERFIL INDIVIDUAL Y EXCLUSIVO DEL TÉCNICO AUTENTICADO -->
     <div id="page-tech-portal" class="hidden max-w-5xl mx-auto p-4 flex-grow w-full space-y-6">
-
         <div class="bg-gradient-to-r from-blue-900 to-indigo-900 text-white p-6 rounded-2xl shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div>
+            <div class="space-y-1">
                 <div class="flex items-center gap-2">
-                    <span class="bg-amber-400 text-gray-900 text-xs font-black px-2.5 py-1 rounded-md uppercase">Panel Exclusivo Técnicos</span>
+                    <span id="techProfileBadge" class="bg-amber-400 text-gray-900 text-xs font-black px-2.5 py-1 rounded-md uppercase">Perfil Técnico</span>
                     <button onclick="logoutTech()" class="text-xs text-blue-300 hover:text-white underline">Cerrar Sesión</button>
                 </div>
-                <h2 class="text-2xl font-black mt-1">Consola de Recepción de Trabajos</h2>
-                <p class="text-xs text-blue-200">Acepta servicios entrantes y gestiona tus ingresos en tiempo real.</p>
+                <h2 id="techProfileName" class="text-2xl font-black">Bienvenido</h2>
+                <p id="techProfileCategory" class="text-xs text-blue-200">Especialidad: -</p>
             </div>
-            
-            <div class="bg-blue-800/80 p-3 rounded-xl border border-blue-700 w-full md:w-auto">
-                <label class="block text-xs font-bold text-amber-300 uppercase mb-1">Mi Perfil Técnico:</label>
-                <select id="activeTechSelector" onchange="updateTechPortalUI()" class="w-full bg-blue-900 text-white font-bold p-2 rounded-lg border border-blue-600 text-sm focus:outline-none">
-                </select>
+
+            <div class="bg-blue-800/80 p-3 rounded-xl border border-blue-700 text-right">
+                <span class="text-xs text-amber-300 font-bold block uppercase">ID Técnico</span>
+                <span id="techProfileId" class="text-sm font-black text-white">#000</span>
             </div>
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm text-center">
-                <span class="text-xs text-gray-500 font-bold block">Ganancias del Día</span>
+                <span class="text-xs text-gray-500 font-bold block">Tus Ganancias</span>
                 <span id="tech-earnings" class="text-2xl font-black text-green-600">$0.00</span>
             </div>
             <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm text-center">
@@ -248,44 +192,52 @@
                 <span id="tech-rating-display" class="text-2xl font-black text-amber-500">5.0 ⭐</span>
             </div>
             <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm text-center">
-                <span class="text-xs text-gray-500 font-bold block">Estado Radar</span>
+                <span class="text-xs text-gray-500 font-bold block">Estado</span>
                 <span class="inline-block mt-1 text-xs font-bold text-green-700 bg-green-100 px-3 py-1 rounded-full">● En Línea</span>
             </div>
         </div>
 
         <div class="space-y-4">
-            <h3 class="text-lg font-bold text-blue-900">🔔 Solicitudes Entrantes</h3>
+            <h3 class="text-lg font-bold text-blue-900">🔔 Tus Pedidos Asignados</h3>
             <div id="techIncomingJobs" class="space-y-3">
                 <div class="bg-white p-8 text-center rounded-2xl border border-gray-200 text-gray-400">
-                    No hay solicitudes pendientes en este momento.
+                    No tienes solicitudes asignadas en este momento.
                 </div>
             </div>
         </div>
-
     </div>
 
-    <footer class="bg-gray-900 text-gray-400 py-8 text-center text-xs mt-auto border-t border-gray-800">
-        <p class="font-bold text-gray-300">Handyman Express © 2026 - Soluciones Técnicas a Domicilio</p>
-    </footer>
-
-    <!-- MODAL INGRESO DE TÉCNICO (PIN / CLAVE DE ACCESO) -->
+    <!-- MODAL DE INGRESO POR TÉCNICO (SELECCIÓN Y PIN PROPIO) -->
     <div id="techAuthModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4">
-        <div class="bg-white p-6 rounded-2xl max-w-sm w-full shadow-2xl space-y-4 text-center">
-            <div class="text-4xl">🔐</div>
-            <h3 class="text-xl font-bold text-blue-900">Acceso Restringido Técnicos</h3>
-            <p class="text-xs text-gray-500">Ingresa tu código PIN para entrar a la consola de trabajos.</p>
+        <div class="bg-white p-6 rounded-2xl max-w-sm w-full shadow-2xl space-y-4">
+            <div class="text-center">
+                <div class="text-4xl mb-1">🔐</div>
+                <h3 class="text-xl font-bold text-blue-900">Iniciar Sesión Técnico</h3>
+                <p class="text-xs text-gray-500">Selecciona tu perfil e ingresa tu PIN individual.</p>
+            </div>
 
-            <input type="password" id="techPinInput" placeholder="Código PIN (Ej. 1234)" class="w-full text-center text-xl tracking-widest p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Seleccionar Técnico</label>
+                    <select id="techSelectLogin" class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </select>
+                </div>
 
-            <div class="flex gap-2">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">PIN Personal</label>
+                    <input type="password" id="techPinInput" placeholder="PIN" class="w-full text-center text-xl tracking-widest p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+
+            <div class="flex gap-2 pt-2">
                 <button onclick="closeTechAuthModal()" class="w-1/2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2.5 rounded-xl text-sm">
                     Cancelar
                 </button>
                 <button onclick="validateTechPin()" class="w-1/2 bg-blue-900 hover:bg-blue-800 text-white font-bold py-2.5 rounded-xl text-sm">
-                    Entrar
+                    Ingresar
                 </button>
             </div>
-            <p class="text-[10px] text-gray-400">PIN de prueba demostrativo: <b>1234</b></p>
+            <p class="text-[10px] text-gray-400 text-center">PIN por defecto para todos los perfiles de prueba: <b>1234</b></p>
         </div>
     </div>
 
@@ -296,7 +248,7 @@
                 <h3 class="text-xl font-bold text-blue-900">Únete como Técnico</h3>
                 <button onclick="closeJoinModal()" class="text-gray-400 hover:text-gray-600 text-2xl font-bold">&times;</button>
             </div>
-            <p class="text-xs text-gray-500">Regístrate para recibir solicitudes de trabajo en tu zona.</p>
+            <p class="text-xs text-gray-500">Crea tu perfil profesional en la plataforma.</p>
             
             <form id="techApplyForm" class="space-y-3">
                 <input type="text" id="techApplicantName" required placeholder="Nombre completo" class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -306,14 +258,18 @@
                     <option value="Aire Acondicionado">❄️ Aire Acondicionado</option>
                     <option value="Techos y Tejados">🏠 Techos y Tejados</option>
                 </select>
-                <input type="tel" id="techApplicantPhone" required placeholder="Número de WhatsApp (+507...)" class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="password" id="techApplicantPin" required placeholder="Crea tu PIN de acceso (4 dígitos)" maxlength="4" class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 
                 <button type="submit" class="w-full bg-blue-900 hover:bg-blue-800 text-white py-3 rounded-xl font-bold text-sm transition">
-                    Enviar Solicitud
+                    Crear Perfil e Ingresar
                 </button>
             </form>
         </div>
     </div>
+
+    <footer class="bg-gray-900 text-gray-400 py-8 text-center text-xs mt-auto border-t border-gray-800">
+        <p class="font-bold text-gray-300">Handyman Express © 2026 - Servicios Técnicos Personalizados</p>
+    </footer>
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -322,41 +278,36 @@
             "Plomería": [
                 { name: "Reparación de Fuga / Grifo", price: 25 },
                 { name: "Destape de Tuberías / Drenaje", price: 40 },
-                { name: "Instalación de Calentador de Agua", price: 85 },
-                { name: "Instalación de Bombas de Agua / Hidroneumático", price: 150 }
+                { name: "Instalación de Calentador de Agua", price: 85 }
             ],
             "Electricidad": [
                 { name: "Reparación de Cortocircuito / Jamón", price: 30 },
-                { name: "Instalación de Lámparas / Abanicos de Techo", price: 35 },
-                { name: "Cableado / Puntos Nuevos de Tomacorriente", price: 60 }
+                { name: "Instalación de Lámparas / Abanicos", price: 35 },
+                { name: "Cableado / Puntos Nuevos", price: 60 }
             ],
             "Aire Acondicionado": [
                 { name: "Mantenimiento Preventivo / Limpieza Split", price: 35 },
                 { name: "Recarga de Gas Refrigerante", price: 65 },
-                { name: "Instalación Completa Split (12k-24k BTU)", price: 140 }
+                { name: "Instalación Completa Split", price: 140 }
             ],
             "Techos y Tejados": [
                 { name: "Reparación de Goteras y Filtraciones", price: 60 },
-                { name: "Impermeabilización de Techo / Losa", price: 180 },
-                { name: "Instalación de Canales de Lluvia", price: 280 }
+                { name: "Impermeabilización de Techo / Losa", price: 180 }
             ]
         };
 
+        // Cada técnico posee su propio ID, PIN independiente e historial
         const technicians = [
-            { id: 1, name: "Roberto Gómez", category: "Plomería", rating: "4.9 ⭐", jobsDone: 142, status: "Disponible", photo: "👨‍🔧", lat: 8.9920, lng: -79.5180 },
-            { id: 2, name: "Carlos Rodríguez", category: "Electricidad", rating: "5.0 ⭐", jobsDone: 98, status: "Disponible", photo: "🧑‍🔧", lat: 8.9800, lng: -79.5250 },
-            { id: 3, name: "Javier López", category: "Aire Acondicionado", rating: "4.8 ⭐", jobsDone: 76, status: "En Ruta", photo: "👨‍🏭", lat: 8.9700, lng: -79.5050 }
+            { id: "TECH-001", pin: "1234", name: "Roberto Gómez", category: "Plomería", rating: "4.9 ⭐", photo: "👨‍🔧", lat: 8.9920, lng: -79.5180 },
+            { id: "TECH-002", pin: "1234", name: "Carlos Rodríguez", category: "Electricidad", rating: "5.0 ⭐", photo: "🧑‍🔧", lat: 8.9800, lng: -79.5250 },
+            { id: "TECH-003", pin: "1234", name: "Javier López", category: "Aire Acondicionado", rating: "4.8 ⭐", photo: "👨‍🏭", lat: 8.9700, lng: -79.5050 }
         ];
 
+        let activeTechUser = null; // Guarda la sesión del técnico autenticado
         let myOrders = [];
-        let map;
-        let userMarker;
-        let isTechAuthenticated = false;
+        let map, userMarker;
+        let userLat = 8.9824, userLng = -79.5199;
 
-        let userLat = 8.9824;
-        let userLng = -79.5199;
-
-        // CONTROL DE SECCIONES
         function showSection(sectionName) {
             document.getElementById('page-landing').classList.add('hidden');
             document.getElementById('page-app').classList.add('hidden');
@@ -366,25 +317,19 @@
                 document.getElementById('page-landing').classList.remove('hidden');
             } else if (sectionName === 'app') {
                 document.getElementById('page-app').classList.remove('hidden');
-                if (!map) {
-                    initMap();
-                } else {
-                    setTimeout(() => map.invalidateSize(), 200);
-                }
+                if (!map) initMap();
+                else setTimeout(() => map.invalidateSize(), 200);
             } else if (sectionName === 'tech-portal') {
                 document.getElementById('page-tech-portal').classList.remove('hidden');
-                updateTechPortalUI();
+                renderIndividualTechPortal();
             }
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // CONTROL DE ACCESO TÉCNICO (PROTECCIÓN CON PIN)
-        function checkTechAuth() {
-            if (isTechAuthenticated) {
-                showSection('tech-portal');
-            } else {
-                document.getElementById('techAuthModal').classList.remove('hidden');
-            }
+        // SISTEMA DE AUTENTICACIÓN INDIVIDUAL DE TÉCNICOS
+        function openTechAuthModal() {
+            populateTechLoginSelect();
+            document.getElementById('techAuthModal').classList.remove('hidden');
         }
 
         function closeTechAuthModal() {
@@ -392,22 +337,102 @@
             document.getElementById('techPinInput').value = '';
         }
 
+        function populateTechLoginSelect() {
+            const select = document.getElementById('techSelectLogin');
+            select.innerHTML = technicians.map(t => `<option value="${t.id}">${t.photo} ${t.name} (${t.category})</option>`).join('');
+        }
+
         function validateTechPin() {
-            const pin = document.getElementById('techPinInput').value;
-            if (pin === "1234") { // PIN clave por defecto
-                isTechAuthenticated = true;
+            const selectedId = document.getElementById('techSelectLogin').value;
+            const inputPin = document.getElementById('techPinInput').value;
+
+            const tech = technicians.find(t => t.id === selectedId);
+
+            if (tech && tech.pin === inputPin) {
+                activeTechUser = tech; // Inicia sesión el técnico específico
                 closeTechAuthModal();
                 showSection('tech-portal');
             } else {
-                alert("PIN incorrecto. Intenta con 1234");
+                alert("PIN incorrecto para el técnico seleccionado.");
             }
         }
 
         function logoutTech() {
-            isTechAuthenticated = false;
+            activeTechUser = null;
             showSection('landing');
         }
 
+        // DIBUJAR EL PORTAL EXCLUSIVO DEL TÉCNICO EN SESIÓN
+        function renderIndividualTechPortal() {
+            if (!activeTechUser) return;
+
+            document.getElementById('techProfileName').textContent = `${activeTechUser.photo} ${activeTechUser.name}`;
+            document.getElementById('techProfileCategory').textContent = `Especialidad: ${activeTechUser.category}`;
+            document.getElementById('techProfileId').textContent = activeTechUser.id;
+            document.getElementById('tech-rating-display').textContent = activeTechUser.rating;
+
+            // Filtrar ÚNICAMENTE los pedidos asignados a este técnico por su ID o Nombre
+            const techOrders = myOrders.filter(o => o.techId === activeTechUser.id || o.techName === activeTechUser.name);
+            const completedOrders = techOrders.filter(o => o.status.includes('Completado') || o.status.includes('Aceptado'));
+
+            const earnings = completedOrders.reduce((sum, o) => sum + o.cost, 0);
+
+            document.getElementById('tech-earnings').textContent = `$${earnings.toFixed(2)}`;
+            document.getElementById('tech-accepted-count').textContent = completedOrders.length;
+
+            const container = document.getElementById('techIncomingJobs');
+
+            if (techOrders.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white p-8 text-center rounded-2xl border border-gray-200 text-gray-400">
+                        No hay pedidos asignados para <b>${activeTechUser.name}</b>.
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = techOrders.map(job => `
+                <div class="bg-white p-5 rounded-2xl shadow-md border-l-4 ${job.status.includes('Completado') ? 'border-green-500' : 'border-blue-600'} flex justify-between items-center">
+                    <div>
+                        <span class="text-xs font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded">Pedido #${job.id}</span>
+                        <h4 class="text-lg font-bold text-gray-900">${job.task}</h4>
+                        <p class="text-xs text-gray-600">👤 Cliente: <b>${job.client}</b> • 📍 ${job.zone}</p>
+                        <p class="text-xs text-gray-500 italic">"${job.detail}"</p>
+                        <span class="inline-block mt-1 text-xs font-bold px-2 py-0.5 rounded-full ${job.status.includes('Completado') ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}">${job.status}</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-xl font-black text-blue-900 block mb-2">$${job.cost.toFixed(2)}</span>
+                        ${job.status.includes('Pendiente') ? `
+                            <button onclick="acceptJob('${job.id}')" class="bg-green-600 hover:bg-green-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl">✅ Aceptar Trabajo</button>
+                        ` : job.status.includes('Aceptado') ? `
+                            <button onclick="completeJob('${job.id}')" class="bg-blue-900 hover:bg-blue-800 text-white text-xs font-bold px-3 py-1.5 rounded-xl">🏁 Finalizar</button>
+                        ` : `
+                            <span class="text-xs font-bold text-green-600">✨ Completado</span>
+                        `}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function acceptJob(orderId) {
+            const order = myOrders.find(o => o.id === orderId);
+            if (order) {
+                order.status = "Aceptado 🚗 (En Camino)";
+                updateOrdersUI();
+                renderIndividualTechPortal();
+            }
+        }
+
+        function completeJob(orderId) {
+            const order = myOrders.find(o => o.id === orderId);
+            if (order) {
+                order.status = "Servicio Completado 🏁";
+                updateOrdersUI();
+                renderIndividualTechPortal();
+            }
+        }
+
+        // MAPA Y SOLICITUD DE CLIENTE
         function initMap() {
             map = L.map('map').setView([userLat, userLng], 13);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
@@ -457,8 +482,8 @@
             const techSelect = document.getElementById('selectedTech');
 
             techSelect.innerHTML = filteredTechs.length > 0 
-                ? filteredTechs.map(t => `<option value="${t.name}">${t.name} (${t.rating})</option>`).join('')
-                : `<option value="Técnico General">Asignar Disponible</option>`;
+                ? filteredTechs.map(t => `<option value="${t.id}">${t.photo} ${t.name} (${t.rating})</option>`).join('')
+                : `<option value="">No hay técnicos en esta área</option>`;
 
             calculateCost();
         }
@@ -473,9 +498,17 @@
 
         document.getElementById('locationZone').addEventListener('change', calculateCost);
 
-        // PEDIDOS CLIENTE
+        // REGISTRO DE PEDIDO ASIGNADO AL TÉCNICO SELECCIONADO
         document.getElementById('orderForm').addEventListener('submit', function(e) {
             e.preventDefault();
+
+            const selectedTechId = document.getElementById('selectedTech').value;
+            const assignedTech = technicians.find(t => t.id === selectedTechId);
+
+            if (!assignedTech) {
+                alert("Por favor selecciona un técnico válido.");
+                return;
+            }
 
             const zoneSelect = document.getElementById('locationZone');
             const taskSelect = document.getElementById('serviceTask');
@@ -487,8 +520,9 @@
                 zone: zoneSelect.options[zoneSelect.selectedIndex].getAttribute('data-name'),
                 category: document.getElementById('serviceCategory').value,
                 task: selectedTaskName,
-                tech: document.getElementById('selectedTech').value,
-                detail: document.getElementById('jobDetail').value || "Sin observaciones",
+                techId: assignedTech.id,       // Vinculación por ID único
+                techName: assignedTech.name,   // Vinculación por Nombre
+                detail: document.getElementById('jobDetail').value || "Sin notas",
                 cost: calculateCost(),
                 status: "Pendiente ⏳",
                 date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -514,7 +548,7 @@
                         <div>
                             <span class="text-xs font-bold bg-blue-100 text-blue-900 px-2 py-0.5 rounded">Pedido #${order.id}</span>
                             <h4 class="font-bold text-gray-900">${order.category}: ${order.task}</h4>
-                            <p class="text-xs text-gray-600">👤 Técnico: <b>${order.tech}</b> • 📍 ${order.zone}</p>
+                            <p class="text-xs text-gray-600">👤 Técnico Asignado: <b>${order.techName}</b> • 📍 ${order.zone}</p>
                             <span class="inline-block mt-2 text-xs font-bold px-2.5 py-1 rounded-full ${order.status.includes('Completado') ? 'text-green-700 bg-green-100' : 'text-amber-700 bg-amber-100'}">${order.status}</span>
                         </div>
                         <div class="text-right">
@@ -525,84 +559,37 @@
             }
         }
 
-        // LÓGICA PORTAL TÉCNICO
-        function populateTechSelector() {
-            const select = document.getElementById('activeTechSelector');
-            select.innerHTML = technicians.map(t => `<option value="${t.name}">${t.photo} ${t.name} (${t.category})</option>`).join('');
-        }
-
-        function updateTechPortalUI() {
-            const currentTechName = document.getElementById('activeTechSelector').value;
-            const relevantJobs = myOrders.filter(o => o.tech === currentTechName || o.tech === "Técnico General");
-            const acceptedJobs = relevantJobs.filter(o => o.status.includes('Aceptado') || o.status.includes('Completado'));
-            
-            const totalEarned = acceptedJobs.reduce((sum, o) => sum + o.cost, 0);
-
-            document.getElementById('tech-earnings').textContent = `$${totalEarned.toFixed(2)}`;
-            document.getElementById('tech-accepted-count').textContent = acceptedJobs.length;
-
-            const container = document.getElementById('techIncomingJobs');
-
-            if (relevantJobs.length === 0) {
-                container.innerHTML = `<div class="bg-white p-8 text-center rounded-2xl border border-gray-200 text-gray-400">Sin trabajos pendientes para <b>${currentTechName}</b>.</div>`;
-                return;
-            }
-
-            container.innerHTML = relevantJobs.map(job => `
-                <div class="bg-white p-5 rounded-2xl shadow-md border-l-4 ${job.status.includes('Completado') ? 'border-green-500' : 'border-blue-600'} flex justify-between items-center">
-                    <div>
-                        <span class="text-xs font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded">Pedido #${job.id}</span>
-                        <h4 class="text-lg font-bold text-gray-900">${job.task}</h4>
-                        <p class="text-xs text-gray-600">👤 Cliente: <b>${job.client}</b> • 📍 ${job.zone}</p>
-                        <p class="text-xs text-gray-500 italic">"${job.detail}"</p>
-                    </div>
-                    <div class="text-right">
-                        <span class="text-xl font-black text-blue-900 block mb-2">$${job.cost.toFixed(2)}</span>
-                        ${job.status.includes('Pendiente') ? `
-                            <button onclick="acceptJob('${job.id}')" class="bg-green-600 hover:bg-green-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl">✅ Aceptar</button>
-                        ` : job.status.includes('Aceptado') ? `
-                            <button onclick="completeJob('${job.id}')" class="bg-blue-900 hover:bg-blue-800 text-white text-xs font-bold px-3 py-1.5 rounded-xl">🏁 Finalizar</button>
-                        ` : `
-                            <span class="text-xs font-bold text-green-600">✨ Listo</span>
-                        `}
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function acceptJob(orderId) {
-            const currentTechName = document.getElementById('activeTechSelector').value;
-            const order = myOrders.find(o => o.id === orderId);
-            if (order) {
-                order.status = "Aceptado 🚗 (En Camino)";
-                order.tech = currentTechName;
-                updateOrdersUI();
-                updateTechPortalUI();
-            }
-        }
-
-        function completeJob(orderId) {
-            const order = myOrders.find(o => o.id === orderId);
-            if (order) {
-                order.status = "Servicio Completado 🏁";
-                updateOrdersUI();
-                updateTechPortalUI();
-            }
-        }
-
+        // REGISTRO DE NUEVO TÉCNICO
         function openJoinModal() { document.getElementById('joinModal').classList.remove('hidden'); }
         function closeJoinModal() { document.getElementById('joinModal').classList.add('hidden'); }
 
         document.getElementById('techApplyForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            alert("Solicitud recibida. Te contactaremos por WhatsApp.");
+            const name = document.getElementById('techApplicantName').value;
+            const category = document.getElementById('techApplicantCategory').value;
+            const pin = document.getElementById('techApplicantPin').value;
+
+            const newTech = {
+                id: `TECH-00${technicians.length + 1}`,
+                pin: pin,
+                name: name,
+                category: category,
+                rating: "5.0 ⭐",
+                photo: "👷‍♂️",
+                lat: userLat + (Math.random() - 0.5) * 0.02,
+                lng: userLng + (Math.random() - 0.5) * 0.02
+            };
+
+            technicians.push(newTech);
+            updateServiceTasks();
             closeJoinModal();
             this.reset();
+
+            alert(`¡Perfil creado con éxito! Tu ID es ${newTech.id} y tu PIN es ${newTech.pin}`);
         });
 
         window.onload = () => {
             updateServiceTasks();
-            populateTechSelector();
         };
     </script>
 </body>
