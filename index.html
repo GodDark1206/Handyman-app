@@ -288,9 +288,9 @@
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <!-- FIREBASE SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <!-- FIREBASE SDKs COMPATIBLES -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
         // CONFIGURACIÓN DE FIREBASE INTEGRADA
@@ -305,7 +305,9 @@
         };
 
         // Inicializar Firebase
-        firebase.initializeApp(firebaseConfig);
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
         const db = firebase.database();
 
         const serviceCatalog = {
@@ -330,12 +332,13 @@
             ]
         };
 
-        let technicians = [
+        let initialTechnicians = [
             { id: "TECH-001", pin: "1234", name: "Roberto Gómez", category: "Plomería", rating: "4.9 ⭐", photo: "👨‍🔧", lat: 8.9920, lng: -79.5180 },
             { id: "TECH-002", pin: "1234", name: "Carlos Rodríguez", category: "Electricidad", rating: "5.0 ⭐", photo: "🧑‍🔧", lat: 8.9800, lng: -79.5250 },
             { id: "TECH-003", pin: "1234", name: "Javier López", category: "Aire Acondicionado", rating: "4.8 ⭐", photo: "👨‍🏭", lat: 8.9700, lng: -79.5050 }
         ];
 
+        let technicians = [...initialTechnicians];
         let activeTechUser = null;
         let myOrders = [];
         let map, userMarker;
@@ -349,14 +352,16 @@
             const data = snapshot.val();
             if (data) {
                 technicians = Object.values(data);
-                populateTechLoginSelect();
-                updateServiceTasks();
-                if (map) renderTechniciansOnMap();
-                if (techMap && activeTechUser) renderTechPortalMap();
             } else {
-                // Si la DB está vacía, subir los técnicos iniciales
-                technicians.forEach(t => db.ref('technicians/' + t.id).set(t));
+                initialTechnicians.forEach(t => db.ref('technicians/' + t.id).set(t));
+                technicians = [...initialTechnicians];
             }
+            populateTechLoginSelect();
+            updateServiceTasks();
+            if (map) renderTechniciansOnMap();
+            if (techMap && activeTechUser) renderTechPortalMap();
+        }, (error) => {
+            console.error("Error al leer técnicos:", error);
         });
 
         // ESCUCHAR PEDIDOS EN TIEMPO REAL DESDE FIREBASE
@@ -365,6 +370,8 @@
             myOrders = data ? Object.values(data) : [];
             updateOrdersUI();
             if (activeTechUser) renderIndividualTechPortal();
+        }, (error) => {
+            console.error("Error al leer pedidos:", error);
         });
 
         function showSection(sectionName) {
@@ -401,6 +408,7 @@
 
         function populateTechLoginSelect() {
             const select = document.getElementById('techSelectLogin');
+            if(!select) return;
             select.innerHTML = technicians.map(t => `<option value="${t.id}">${t.photo} ${t.name} (${t.category})</option>`).join('');
         }
 
@@ -415,7 +423,6 @@
                 closeTechAuthModal();
                 showSection('tech-portal');
 
-                // Iniciar rastreo continuo por GPS
                 startContinuousGPS();
             } else {
                 alert("PIN incorrecto para el técnico seleccionado.");
@@ -439,11 +446,10 @@
                         activeTechUser.lat = newLat;
                         activeTechUser.lng = newLng;
 
-                        // GUARDAR EN FIREBASE (EN TIEMPO REAL MULTIDISPOSITIVO)
                         db.ref('technicians/' + activeTechUser.id).update({
                             lat: newLat,
                             lng: newLng
-                        });
+                        }).catch(err => console.error("Error al actualizar GPS:", err));
                     }
 
                     const gpsStatus = document.getElementById('tech-gps-status');
@@ -552,11 +558,13 @@
         }
 
         function acceptJob(orderId) {
-            db.ref('orders/' + orderId).update({ status: "Aceptado 🚗 (En Camino)" });
+            db.ref('orders/' + orderId).update({ status: "Aceptado 🚗 (En Camino)" })
+              .catch(err => alert("Error en Firebase: " + err.message));
         }
 
         function completeJob(orderId) {
-            db.ref('orders/' + orderId).update({ status: "Servicio Completado 🏁" });
+            db.ref('orders/' + orderId).update({ status: "Servicio Completado 🏁" })
+              .catch(err => alert("Error en Firebase: " + err.message));
         }
 
         function renderTechniciansOnMap() {
@@ -608,7 +616,10 @@
         }
 
         function updateServiceTasks() {
-            const category = document.getElementById('serviceCategory').value;
+            const categorySelect = document.getElementById('serviceCategory');
+            if(!categorySelect) return;
+
+            const category = categorySelect.value;
             const taskSelect = document.getElementById('serviceTask');
             const tasks = serviceCatalog[category] || [];
 
@@ -625,8 +636,12 @@
         }
 
         function calculateCost() {
-            const taskCost = parseFloat(document.getElementById('serviceTask').value) || 0;
-            const travelCost = parseFloat(document.getElementById('locationZone').value) || 0;
+            const taskSelect = document.getElementById('serviceTask');
+            const zoneSelect = document.getElementById('locationZone');
+            if(!taskSelect || !zoneSelect) return 0;
+
+            const taskCost = parseFloat(taskSelect.value) || 0;
+            const travelCost = parseFloat(zoneSelect.value) || 0;
             const total = taskCost + travelCost;
             document.getElementById('displayTotal').textContent = `$${total.toFixed(2)}`;
             return total;
@@ -671,17 +686,23 @@
                 date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             };
 
-            // GUARDAR EN FIREBASE
-            db.ref('orders/' + orderId).set(newOrder);
-
-            switchTab('jobs');
-            this.reset();
-            updateServiceTasks();
+            // GUARDAR EN FIREBASE CON MANEJO DE ERRORES
+            db.ref('orders/' + orderId).set(newOrder)
+                .then(() => {
+                    alert(`¡Solicitud #${orderId} enviada con éxito a ${assignedTech.name}!`);
+                    switchTab('jobs');
+                    this.reset();
+                    updateServiceTasks();
+                })
+                .catch((error) => {
+                    alert("Error al enviar pedido a Firebase: " + error.message + "\n\nAsegúrate de haber publicado las Reglas de seguridad en '.read: true' y '.write: true'.");
+                });
         });
 
         function updateOrdersUI() {
             const badge = document.getElementById('job-badge');
             const jobsList = document.getElementById('jobsList');
+            if(!badge || !jobsList) return;
 
             if (myOrders.length > 0) {
                 badge.textContent = myOrders.length;
@@ -724,13 +745,13 @@
                 lng: userLng
             };
 
-            // GUARDAR NUEVO TÉCNICO EN FIREBASE
-            db.ref('technicians/' + techId).set(newTech);
-
-            closeJoinModal();
-            this.reset();
-
-            alert(`¡Perfil creado con éxito! Tu ID es ${newTech.id} y tu PIN es ${newTech.pin}`);
+            db.ref('technicians/' + techId).set(newTech)
+                .then(() => {
+                    closeJoinModal();
+                    this.reset();
+                    alert(`¡Perfil creado con éxito! Tu ID es ${newTech.id} y tu PIN es ${newTech.pin}`);
+                })
+                .catch((error) => alert("Error al registrar técnico: " + error.message));
         });
 
         window.onload = () => {
