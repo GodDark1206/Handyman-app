@@ -198,7 +198,7 @@
             </div>
             <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm text-center">
                 <span class="text-xs text-gray-500 font-bold block">Ubicación GPS</span>
-                <span id="tech-gps-status" class="inline-block mt-1 text-xs font-bold text-green-700 bg-green-100 px-3 py-1 rounded-full">● Sincronizada</span>
+                <span id="tech-gps-status" class="inline-block mt-1 text-xs font-bold text-amber-700 bg-amber-100 px-3 py-1 rounded-full">⏳ Solicitando...</span>
             </div>
         </div>
 
@@ -359,34 +359,45 @@
                 closeTechAuthModal();
                 showSection('tech-portal');
 
-                // SOLICITAR UBICACIÓN EN TIEMPO REAL AL INICIAR SESIÓN
-                updateTechLocation();
+                // Solicitar GPS inmediatamente al validar el PIN
+                updateTechLocation(true);
             } else {
                 alert("PIN incorrecto para el técnico seleccionado.");
             }
         }
 
-        // FUNCIÓN PARA OBTENER GPS DEL TÉCNICO Y ACTUALIZAR MAPA
         function updateTechLocation(showAlert = false) {
-            if (navigator.geolocation && activeTechUser) {
-                navigator.geolocation.getCurrentPosition(
-                    (pos) => {
+            if (!navigator.geolocation) {
+                alert("Tu navegador no soporta geolocalización.");
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    if (activeTechUser) {
                         activeTechUser.lat = pos.coords.latitude;
                         activeTechUser.lng = pos.coords.longitude;
-
-                        document.getElementById('tech-gps-status').textContent = "● Sincronizada";
-                        document.getElementById('tech-gps-status').className = "inline-block mt-1 text-xs font-bold text-green-700 bg-green-100 px-3 py-1 rounded-full";
-
-                        if (map) renderTechniciansOnMap();
-                        if (showAlert) alert("Ubicación GPS actualizada en el mapa del cliente.");
-                    },
-                    (error) => {
-                        console.warn("No se pudo obtener la ubicación GPS:", error.message);
-                        document.getElementById('tech-gps-status').textContent = "⚠️ Sin GPS";
-                        document.getElementById('tech-gps-status').className = "inline-block mt-1 text-xs font-bold text-amber-700 bg-amber-100 px-3 py-1 rounded-full";
                     }
-                );
-            }
+
+                    const gpsStatus = document.getElementById('tech-gps-status');
+                    if (gpsStatus) {
+                        gpsStatus.textContent = "● Sincronizada";
+                        gpsStatus.className = "inline-block mt-1 text-xs font-bold text-green-700 bg-green-100 px-3 py-1 rounded-full";
+                    }
+
+                    if (map) renderTechniciansOnMap();
+                    if (showAlert) alert("📍 ¡Ubicación GPS sincronizada exitosamente en el mapa!");
+                },
+                (error) => {
+                    console.error("Error GPS:", error);
+                    let msg = "No se pudo obtener tu ubicación.";
+                    if (error.code === error.PERMISSION_DENIED) {
+                        msg = "⚠️ Permiso de ubicación denegado. Por favor, haz clic en el candado junto a la URL del navegador y permite el acceso a la ubicación.";
+                    }
+                    alert(msg);
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
         }
 
         function logoutTech() {
@@ -462,7 +473,6 @@
             }
         }
 
-        // DIBUJAR MARCADORES DE TÉCNICOS EN EL MAPA
         function renderTechniciansOnMap() {
             if (!map) return;
 
