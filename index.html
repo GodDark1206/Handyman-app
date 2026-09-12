@@ -205,7 +205,7 @@
         <!-- MAPA PARA EL TÉCNICO -->
         <div class="bg-white p-4 rounded-2xl shadow-md border border-gray-200 space-y-2">
             <div class="flex justify-between items-center">
-                <h3 class="font-bold text-blue-900 text-sm flex items-center gap-2">🗺️ Tu Mapa de Trabajo & Clientes</h3>
+                <h3 class="font-bold text-blue-900 text-sm flex items-center gap-2">🗺️ Tu Mapa de Trabajo & Clientes Activos</h3>
                 <span class="text-xs text-gray-500">Transmisión en tiempo real a Firebase</span>
             </div>
             <div id="techMap" class="map-container"></div>
@@ -331,7 +331,7 @@
             ]
         };
 
-        let userLat = 8.9824, userLng = -79.5199; // Coordenadas iniciales/detectadas
+        let userLat = 8.9824, userLng = -79.5199;
 
         let initialTechnicians = [
             { id: "TECH-001", pin: "1234", name: "Roberto Gómez", category: "Plomería", rating: "4.9 ⭐", photo: "👨‍🔧", lat: 8.9824, lng: -79.5199 },
@@ -347,7 +347,6 @@
         let clientMapMarkers = {};
         let watchPositionId = null;
 
-        // Intentar obtener la ubicación real inmediatamente al cargar
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition((pos) => {
                 userLat = pos.coords.latitude;
@@ -356,7 +355,6 @@
             });
         }
 
-        // ESCUCHAR TÉCNICOS EN TIEMPO REAL DESDE FIREBASE
         db.ref('technicians').on('value', (snapshot) => {
             const data = snapshot.val();
             if (data) {
@@ -371,7 +369,6 @@
             if (techMap && activeTechUser) renderTechPortalMap();
         });
 
-        // ESCUCHAR PEDIDOS EN TIEMPO REAL DESDE FIREBASE
         db.ref('orders').on('value', (snapshot) => {
             const data = snapshot.val();
             myOrders = data ? Object.values(data) : [];
@@ -489,6 +486,7 @@
             setTimeout(() => techMap.invalidateSize(), 200);
         }
 
+        // MOSTRAR SÓLO UBICACIONES DE PEDIDOS ACTIVOS EN EL MAPA
         function renderTechPortalMap() {
             if (!techMap || !activeTechUser) return;
 
@@ -499,9 +497,13 @@
                 .bindPopup(`<b>${activeTechUser.photo} Tu Posición</b><br><span class="text-xs text-green-600 font-bold">Transmitiendo GPS</span>`);
             techMapMarkers.push(techMarker);
 
-            const techOrders = myOrders.filter(o => o.techId === activeTechUser.id || o.techName === activeTechUser.name);
+            // FILTRAR: Solo pedidos que NO estén completados y tengan coordenadas válidas
+            const activeTechOrders = myOrders.filter(o => 
+                (o.techId === activeTechUser.id || o.techName === activeTechUser.name) && 
+                !o.status.includes('Completado')
+            );
 
-            techOrders.forEach(order => {
+            activeTechOrders.forEach(order => {
                 if (order.clientLat && order.clientLng) {
                     const clientMarker = L.marker([order.clientLat, order.clientLng]).addTo(techMap)
                         .bindPopup(`<b>👤 Cliente: ${order.client}</b><br>🛠️ ${order.task}<br>📍 ${order.zone}<br><b>Estado:</b> ${order.status}`);
@@ -568,8 +570,13 @@
             db.ref('orders/' + orderId).update({ status: "Aceptado 🚗 (En Camino)" });
         }
 
+        // LIMPIA LAS COORDENADAS GPS AL COMPLETAR LA ORDEN
         function completeJob(orderId) {
-            db.ref('orders/' + orderId).update({ status: "Servicio Completado 🏁" });
+            db.ref('orders/' + orderId).update({
+                status: "Servicio Completado 🏁",
+                clientLat: null,
+                clientLng: null
+            });
         }
 
         function renderTechniciansOnMap() {
@@ -655,7 +662,6 @@
 
         document.getElementById('locationZone').addEventListener('change', calculateCost);
 
-        // CREAR PEDIDO UTILIZANDO SIEMPRE LA UBICACIÓN ACTUAL DEL DISPOSITIVO
         document.getElementById('orderForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
@@ -670,7 +676,6 @@
             const zoneSelect = document.getElementById('locationZone');
             const selectedOption = zoneSelect.options[zoneSelect.selectedIndex];
 
-            // COORDENADAS REALES DEL CLIENTE (SIN ZONAS POR DEFECTO)
             const clientLat = userLat;
             const clientLng = userLng;
 
