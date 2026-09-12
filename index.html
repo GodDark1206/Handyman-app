@@ -9,7 +9,7 @@
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        #map { height: 380px; width: 100%; border-radius: 1rem; z-index: 1; }
+        .map-container { height: 320px; width: 100%; border-radius: 1rem; z-index: 1; }
         html { scroll-behavior: smooth; }
     </style>
 </head>
@@ -83,7 +83,7 @@
                         🎯 Mi Ubicación
                     </button>
                 </div>
-                <div id="map"></div>
+                <div id="map" class="map-container"></div>
             </div>
 
             <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-200">
@@ -98,10 +98,10 @@
                         <div>
                             <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Zona / Sector</label>
                             <select id="locationZone" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                                <option value="0" data-name="Panamá Centro">Panamá Centro (Sin recargo)</option>
-                                <option value="5" data-name="San Miguelito">San Miguelito (+$5.00 transporte)</option>
-                                <option value="10" data-name="Panamá Oeste">Panamá Oeste / Arraiján (+$10.00 transporte)</option>
-                                <option value="8" data-name="Panamá Este">Panamá Este / Tocumen (+$8.00 transporte)</option>
+                                <option value="0" data-name="Panamá Centro" data-lat="8.9824" data-lng="-79.5199">Panamá Centro (Sin recargo)</option>
+                                <option value="5" data-name="San Miguelito" data-lat="9.0333" data-lng="-79.5000">San Miguelito (+$5.00 transporte)</option>
+                                <option value="10" data-name="Panamá Oeste" data-lat="8.9833" data-lng="-79.6500">Panamá Oeste / Arraiján (+$10.00 transporte)</option>
+                                <option value="8" data-name="Panamá Este" data-lat="9.0833" data-lng="-79.3833">Panamá Este / Tocumen (+$8.00 transporte)</option>
                             </select>
                         </div>
                     </div>
@@ -200,6 +200,15 @@
                 <span class="text-xs text-gray-500 font-bold block">Ubicación GPS</span>
                 <span id="tech-gps-status" class="inline-block mt-1 text-xs font-bold text-amber-700 bg-amber-100 px-3 py-1 rounded-full">⏳ Solicitando...</span>
             </div>
+        </div>
+
+        <!-- MAPA PARA EL TÉCNICO -->
+        <div class="bg-white p-4 rounded-2xl shadow-md border border-gray-200 space-y-2">
+            <div class="flex justify-between items-center">
+                <h3 class="font-bold text-blue-900 text-sm flex items-center gap-2">🗺️ Tu Mapa de Trabajo & Clientes</h3>
+                <span class="text-xs text-gray-500">Visualiza tu posición y los clientes que te han contratado</span>
+            </div>
+            <div id="techMap" class="map-container"></div>
         </div>
 
         <div class="space-y-4">
@@ -310,6 +319,7 @@
         let activeTechUser = null;
         let myOrders = [];
         let map, userMarker;
+        let techMap, techMapMarkers = [];
         let userLat = 8.9824, userLng = -79.5199;
 
         function showSection(sectionName) {
@@ -328,6 +338,7 @@
                 }
             } else if (sectionName === 'tech-portal') {
                 document.getElementById('page-tech-portal').classList.remove('hidden');
+                initTechMap();
                 renderIndividualTechPortal();
             }
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -359,7 +370,7 @@
                 closeTechAuthModal();
                 showSection('tech-portal');
 
-                // Solicitar GPS inmediatamente al validar el PIN
+                // Solicitar GPS inmediatamente
                 updateTechLocation(true);
             } else {
                 alert("PIN incorrecto para el técnico seleccionado.");
@@ -374,9 +385,12 @@
 
             navigator.geolocation.getCurrentPosition(
                 (pos) => {
+                    const newLat = pos.coords.latitude;
+                    const newLng = pos.coords.longitude;
+
                     if (activeTechUser) {
-                        activeTechUser.lat = pos.coords.latitude;
-                        activeTechUser.lng = pos.coords.longitude;
+                        activeTechUser.lat = newLat;
+                        activeTechUser.lng = newLng;
                     }
 
                     const gpsStatus = document.getElementById('tech-gps-status');
@@ -385,14 +399,21 @@
                         gpsStatus.className = "inline-block mt-1 text-xs font-bold text-green-700 bg-green-100 px-3 py-1 rounded-full";
                     }
 
-                    if (map) renderTechniciansOnMap();
+                    if (map) {
+                        renderTechniciansOnMap();
+                    }
+
+                    if (techMap) {
+                        renderTechPortalMap();
+                    }
+
                     if (showAlert) alert("📍 ¡Ubicación GPS sincronizada exitosamente en el mapa!");
                 },
                 (error) => {
                     console.error("Error GPS:", error);
                     let msg = "No se pudo obtener tu ubicación.";
                     if (error.code === error.PERMISSION_DENIED) {
-                        msg = "⚠️ Permiso de ubicación denegado. Por favor, haz clic en el candado junto a la URL del navegador y permite el acceso a la ubicación.";
+                        msg = "⚠️ Permiso de ubicación denegado. Por favor, permite el acceso a la ubicación desde el icono de candado en la barra de direcciones.";
                     }
                     alert(msg);
                 },
@@ -403,6 +424,41 @@
         function logoutTech() {
             activeTechUser = null;
             showSection('landing');
+        }
+
+        function initTechMap() {
+            if (!techMap) {
+                techMap = L.map('techMap').setView([userLat, userLng], 12);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(techMap);
+            }
+            setTimeout(() => techMap.invalidateSize(), 200);
+        }
+
+        function renderTechPortalMap() {
+            if (!techMap || !activeTechUser) return;
+
+            // Limpiar marcadores viejos
+            techMapMarkers.forEach(m => techMap.removeLayer(m));
+            techMapMarkers = [];
+
+            // 1. Marcador del Técnico
+            const techMarker = L.marker([activeTechUser.lat, activeTechUser.lng]).addTo(techMap)
+                .bindPopup(`<b>${activeTechUser.photo} Tu Ubicación Actual</b><br><span class="text-xs text-green-600 font-bold">Técnico En Línea</span>`);
+            techMapMarkers.push(techMarker);
+
+            // 2. Marcadores de Clientes asignados a este técnico
+            const techOrders = myOrders.filter(o => o.techId === activeTechUser.id || o.techName === activeTechUser.name);
+
+            techOrders.forEach(order => {
+                if (order.clientLat && order.clientLng) {
+                    const clientMarker = L.marker([order.clientLat, order.clientLng]).addTo(techMap)
+                        .bindPopup(`<b>👤 Cliente: ${order.client}</b><br>🛠️ ${order.task}<br>📍 ${order.zone}<br><b>Estado:</b> ${order.status}`);
+                    techMapMarkers.push(clientMarker);
+                }
+            });
+
+            // Centrar mapa en la posición del técnico
+            techMap.setView([activeTechUser.lat, activeTechUser.lng], 13);
         }
 
         function renderIndividualTechPortal() {
@@ -420,6 +476,8 @@
 
             document.getElementById('tech-earnings').textContent = `$${earnings.toFixed(2)}`;
             document.getElementById('tech-accepted-count').textContent = completedOrders.length;
+
+            renderTechPortalMap();
 
             const container = document.getElementById('techIncomingJobs');
 
@@ -480,7 +538,7 @@
                 if (tech.marker) map.removeLayer(tech.marker);
 
                 tech.marker = L.marker([tech.lat, tech.lng]).addTo(map)
-                    .bindPopup(`<b>${tech.photo} ${tech.name}</b><br>${tech.category}`);
+                    .bindPopup(`<b>${tech.photo} ${tech.name}</b><br>${tech.category}<br><span class="text-xs text-green-600 font-bold">📍 GPS en vivo</span>`);
             });
         }
 
@@ -558,13 +616,20 @@
             }
 
             const zoneSelect = document.getElementById('locationZone');
+            const selectedOption = zoneSelect.options[zoneSelect.selectedIndex];
+
+            const clientLat = parseFloat(selectedOption.getAttribute('data-lat')) || userLat;
+            const clientLng = parseFloat(selectedOption.getAttribute('data-lng')) || userLng;
+
             const taskSelect = document.getElementById('serviceTask');
             const selectedTaskName = taskSelect.options[taskSelect.selectedIndex].text.split(' ($')[0];
 
             const newOrder = {
                 id: Date.now().toString().slice(-4),
                 client: document.getElementById('clientName').value,
-                zone: zoneSelect.options[zoneSelect.selectedIndex].getAttribute('data-name'),
+                zone: selectedOption.getAttribute('data-name'),
+                clientLat: clientLat,
+                clientLng: clientLng,
                 category: document.getElementById('serviceCategory').value,
                 task: selectedTaskName,
                 techId: assignedTech.id,
