@@ -53,7 +53,6 @@
                         🎯 Mi Ubicación
                     </button>
                 </div>
-                <!-- El mapa se renderiza dentro de este DIV -->
                 <div id="map"></div>
             </div>
 
@@ -81,28 +80,38 @@
                     <div class="grid md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Especialidad Requerida</label>
-                            <select id="serviceCategory" onchange="filterTechsByCategory()" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                                <option value="Plomería">🚰 Plomería ($25 tarifa base)</option>
-                                <option value="Electricidad">⚡ Electricidad ($30 tarifa base)</option>
+                            <select id="serviceCategory" onchange="updateServiceTasks()" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                <option value="Plomería">🚰 Plomería</option>
+                                <option value="Electricidad">⚡ Electricidad</option>
+                                <option value="Aire Acondicionado">❄️ Aire Acondicionado</option>
+                                <option value="Techos y Tejados">🏠 Techos y Tejados</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Seleccionar Técnico Cercano</label>
-                            <select id="selectedTech" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                                <!-- Se llena dinámicamente con JS -->
+                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Tipo de Trabajo / Servicio</label>
+                            <select id="serviceTask" onchange="calculateCost()" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                <!-- Se llena dinámicamente -->
                             </select>
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Detalle del Trabajo</label>
-                        <textarea id="jobDetail" rows="2" placeholder="Describe brevemente el problema técnico..." class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none" required></textarea>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Seleccionar Técnico Cercano</label>
+                            <select id="selectedTech" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                <!-- Se llena dinámicamente -->
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Detalle Adicional (Opcional)</label>
+                            <input type="text" id="jobDetail" placeholder="Ej. Marca del equipo, piso, etc." class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        </div>
                     </div>
 
                     <div class="bg-blue-50 p-4 rounded-xl border border-blue-200 flex justify-between items-center">
                         <div>
                             <span class="text-xs text-gray-500 block uppercase font-bold">Tarifa Estimada</span>
-                            <span class="text-xs text-gray-400">Servicio + Movilización</span>
+                            <span class="text-xs text-gray-400">Servicio Seleccionado + Movilización</span>
                         </div>
                         <span id="displayTotal" class="text-3xl font-black text-blue-900">$25.00</span>
                     </div>
@@ -146,6 +155,8 @@
                 <select id="techApplicantCategory" class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="Plomería">🚰 Plomería</option>
                     <option value="Electricidad">⚡ Electricidad</option>
+                    <option value="Aire Acondicionado">❄️ Aire Acondicionado</option>
+                    <option value="Techos y Tejados">🏠 Techos y Tejados</option>
                 </select>
                 <input type="tel" id="techApplicantPhone" required placeholder="Número de WhatsApp (+507...)" class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 
@@ -159,12 +170,44 @@
     <!-- Leaflet JS (Librería de Mapas) -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
+        // LISTA DE SERVICIOS Y PRECIOS
+        const serviceCatalog = {
+            "Plomería": [
+                { name: "Reparación de Fuga / Grifo", price: 25 },
+                { name: "Destape de Tuberías / Drenaje", price: 40 },
+                { name: "Instalación de Calentador de Agua", price: 85 },
+                { name: "Instalación de Bombas de Agua / Hidroneumático", price: 150 },
+                { name: "Remodelación / Reemplazo de Tubería Completa", price: 300 }
+            ],
+            "Electricidad": [
+                { name: "Reparación de Cortocircuito / Jamón", price: 30 },
+                { name: "Instalación de Lámparas / Abanicos de Techo", price: 35 },
+                { name: "Cableado / Puntos Nuevos de Tomacorriente", price: 60 },
+                { name: "Instalación de Panel Eléctrico / Breakers", price: 180 },
+                { name: "Acometida / Cableado Trifásico Completo", price: 450 }
+            ],
+            "Aire Acondicionado": [
+                { name: "Mantenimiento Preventivo / Limpieza Split", price: 35 },
+                { name: "Recarga de Gas Refrigerante", price: 65 },
+                { name: "Reparación de Tarjeta / Compresor", price: 110 },
+                { name: "Instalación Completa Split (12k-24k BTU)", price: 140 },
+                { name: "Instalación Sistema Central / Inverter Comercial", price: 500 }
+            ],
+            "Techos y Tejados": [
+                { name: "Reparación de Goteras y Filtraciones", price: 60 },
+                { name: "Impermeabilización de Techo / Losa", price: 180 },
+                { name: "Limpieza y Pintura Antioxidante de Techo", price: 220 },
+                { name: "Instalación de Canales de Lluvia", price: 280 },
+                { name: "Cambio / Instalación de Techo Nuevo Completo", price: 750 }
+            ]
+        };
+
         // BASE DE DATOS DE TÉCNICOS CON COORDENADAS
         const technicians = [
             { id: 1, name: "Roberto Gómez", category: "Plomería", rating: "4.9 ⭐", jobsDone: 142, status: "Disponible", photo: "👨‍🔧", lat: 8.9920, lng: -79.5180 },
             { id: 2, name: "Carlos Rodríguez", category: "Electricidad", rating: "5.0 ⭐", jobsDone: 98, status: "Disponible", photo: "🧑‍🔧", lat: 8.9800, lng: -79.5250 },
-            { id: 3, name: "Javier López", category: "Plomería", rating: "4.8 ⭐", jobsDone: 76, status: "En Ruta", photo: "👨‍🏭", lat: 8.9700, lng: -79.5050 },
-            { id: 4, name: "Miguel Ángel", category: "Electricidad", rating: "4.9 ⭐", jobsDone: 115, status: "Disponible", photo: "👷‍♂️", lat: 9.0050, lng: -79.5100 }
+            { id: 3, name: "Javier López", category: "Aire Acondicionado", rating: "4.8 ⭐", jobsDone: 76, status: "En Ruta", photo: "👨‍🏭", lat: 8.9700, lng: -79.5050 },
+            { id: 4, name: "Miguel Ángel", category: "Techos y Tejados", rating: "4.9 ⭐", jobsDone: 115, status: "Disponible", photo: "👷‍♂️", lat: 9.0050, lng: -79.5100 }
         ];
 
         let myOrders = [];
@@ -172,11 +215,9 @@
         let userMarker;
         let techMarkers = [];
 
-        // Coordenadas iniciales (Panamá Centro)
         let userLat = 8.9824;
         let userLng = -79.5199;
 
-        // INICIALIZACIÓN DEL MAPA CON CORRECCIÓN DE TAMAÑO
         function initMap() {
             map = L.map('map').setView([userLat, userLng], 13);
 
@@ -185,7 +226,6 @@
                 attribution: '© OpenStreetMap contributors'
             }).addTo(map);
 
-            // Ajuste automático de vista
             setTimeout(() => { map.invalidateSize(); }, 300);
 
             setUserMarker(userLat, userLng, "📍 Tu Ubicación Actual");
@@ -234,7 +274,6 @@
             });
         }
 
-        // CONTROL DE PESTAÑAS (SPA)
         function switchTab(tabName) {
             ['request', 'techs', 'jobs'].forEach(tab => {
                 document.getElementById(`tab-${tab}`).classList.add('hidden');
@@ -250,7 +289,6 @@
             }
         }
 
-        // FUNCIONES MODAL TRABAJA CON NOSOTROS
         function openJoinModal() {
             document.getElementById('joinModal').classList.remove('hidden');
         }
@@ -279,7 +317,7 @@
 
             renderTechs();
             renderTechMarkers();
-            filterTechsByCategory();
+            updateServiceTasks();
             closeJoinModal();
             
             alert(`¡Bienvenido/a ${name}! Te has registrado activamente como técnico.`);
@@ -303,36 +341,51 @@
             `).join('');
         }
 
-        function filterTechsByCategory() {
-            const cat = document.getElementById('serviceCategory').value;
-            const filtered = technicians.filter(t => t.category === cat);
-            const select = document.getElementById('selectedTech');
-            select.innerHTML = filtered.map(t => `<option value="${t.name}">${t.name} (${t.rating})</option>`).join('');
+        function updateServiceTasks() {
+            const category = document.getElementById('serviceCategory').value;
+            const taskSelect = document.getElementById('serviceTask');
+            const tasks = serviceCatalog[category] || [];
+
+            taskSelect.innerHTML = tasks.map(t => `<option value="${t.price}">${t.name} ($${t.price})</option>`).join('');
+
+            // Filtrar técnicos por categoría seleccionada
+            const filteredTechs = technicians.filter(t => t.category === category);
+            const techSelect = document.getElementById('selectedTech');
+
+            if (filteredTechs.length > 0) {
+                techSelect.innerHTML = filteredTechs.map(t => `<option value="${t.name}">${t.name} (${t.rating})</option>`).join('');
+            } else {
+                techSelect.innerHTML = `<option value="Técnico General">Asignar Técnico Disponible</option>`;
+            }
+
             calculateCost();
         }
 
         function calculateCost() {
-            const baseCost = document.getElementById('serviceCategory').value === 'Plomería' ? 25 : 30;
-            const travelCost = parseFloat(document.getElementById('locationZone').value);
-            const total = baseCost + travelCost;
+            const taskCost = parseFloat(document.getElementById('serviceTask').value) || 0;
+            const travelCost = parseFloat(document.getElementById('locationZone').value) || 0;
+            const total = taskCost + travelCost;
             document.getElementById('displayTotal').textContent = `$${total.toFixed(2)}`;
             return total;
         }
 
         document.getElementById('locationZone').addEventListener('change', calculateCost);
-        document.getElementById('serviceCategory').addEventListener('change', calculateCost);
 
         document.getElementById('orderForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
             const zoneSelect = document.getElementById('locationZone');
+            const taskSelect = document.getElementById('serviceTask');
+            const selectedTaskName = taskSelect.options[taskSelect.selectedIndex].text.split(' ($')[0];
+
             const newOrder = {
                 id: Date.now().toString().slice(-4),
                 client: document.getElementById('clientName').value,
                 zone: zoneSelect.options[zoneSelect.selectedIndex].getAttribute('data-name'),
                 category: document.getElementById('serviceCategory').value,
+                task: selectedTaskName,
                 tech: document.getElementById('selectedTech').value,
-                detail: document.getElementById('jobDetail').value,
+                detail: document.getElementById('jobDetail').value || "Sin observaciones adicionales",
                 cost: calculateCost(),
                 status: "Técnico asignado en mapa 🚗",
                 date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -342,7 +395,7 @@
             updateOrdersUI();
             switchTab('jobs');
             this.reset();
-            calculateCost();
+            updateServiceTasks();
         });
 
         function updateOrdersUI() {
@@ -360,8 +413,9 @@
                                 <span class="text-xs font-bold bg-blue-100 text-blue-900 px-2 py-0.5 rounded">Pedido #${order.id}</span>
                                 <span class="text-xs text-gray-400">${order.date}</span>
                             </div>
-                            <h4 class="font-bold text-gray-900">${order.category} con ${order.tech}</h4>
-                            <p class="text-xs text-gray-600">📍 ${order.zone} • ${order.detail}</p>
+                            <h4 class="font-bold text-gray-900">${order.category}: ${order.task}</h4>
+                            <p class="text-xs text-gray-600">👤 Técnico: ${order.tech} • 📍 ${order.zone}</p>
+                            <p class="text-xs text-gray-400 italic">Notas: "${order.detail}"</p>
                             <span class="inline-block mt-2 text-xs font-bold text-green-600 bg-green-50 px-2.5 py-1 rounded-full">${order.status}</span>
                         </div>
                         <div class="text-right">
@@ -378,7 +432,7 @@
         window.onload = () => {
             initMap();
             renderTechs();
-            filterTechsByCategory();
+            updateServiceTasks();
         };
     </script>
 </body>
