@@ -30,6 +30,9 @@
                 <button onclick="openTechAuthModal()" class="bg-blue-800/80 border border-blue-600 text-amber-300 hover:bg-blue-700 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-1.5">
                     🔒 Portal Técnico
                 </button>
+                <button onclick="openAdminAuthModal()" class="bg-gray-800 border border-gray-700 text-gray-300 hover:bg-gray-700 px-2.5 py-2 rounded-xl text-xs font-bold transition" title="Panel Admin">
+                    ⚙️ Admin
+                </button>
             </div>
         </div>
     </nav>
@@ -77,7 +80,7 @@
                 <div class="flex justify-between items-center mb-3">
                     <div>
                         <h3 class="font-bold text-gray-900 flex items-center gap-2">📍 Cobertura en Vivo (Sincronizado)</h3>
-                        <p class="text-xs text-gray-500">Técnicos calificados conectados en tiempo real</p>
+                        <p class="text-xs text-gray-500">Técnicos calificados y aprobados conectados en tiempo real</p>
                     </div>
                     <button onclick="getUserLocation()" class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-blue-200 transition">
                         🎯 Mi Ubicación Real
@@ -221,13 +224,31 @@
         </div>
     </div>
 
+    <!-- 4. PANEL DE ADMINISTRACIÓN (NUEVO) -->
+    <div id="page-admin-portal" class="hidden max-w-4xl mx-auto p-4 flex-grow w-full space-y-6">
+        <div class="bg-gray-900 text-white p-6 rounded-2xl shadow-lg flex justify-between items-center">
+            <div>
+                <span class="bg-amber-500 text-gray-900 text-xs font-black px-2.5 py-1 rounded-md uppercase">Panel de Control</span>
+                <h2 class="text-2xl font-black mt-1">Aprobación de Técnicos</h2>
+            </div>
+            <button onclick="showSection('landing')" class="bg-gray-800 hover:bg-gray-700 text-xs text-gray-300 px-3 py-2 rounded-xl">Salir de Admin</button>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-200 space-y-4">
+            <h3 class="font-bold text-gray-900 text-lg">Solicitudes Pendientes de Revisión</h3>
+            <div id="adminPendingList" class="space-y-3">
+                <div class="p-6 text-center text-gray-400 bg-gray-50 rounded-xl">No hay solicitudes pendientes.</div>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL DE INGRESO TÉCNICO -->
     <div id="techAuthModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4">
         <div class="bg-white p-6 rounded-2xl max-w-sm w-full shadow-2xl space-y-4">
             <div class="text-center">
                 <div class="text-4xl mb-1">🔐</div>
                 <h3 class="text-xl font-bold text-blue-900">Iniciar Sesión Técnico</h3>
-                <p class="text-xs text-gray-500">Selecciona tu perfil e ingresa tu PIN.</p>
+                <p class="text-xs text-gray-500">Solo perfiles aprobados por el administrador.</p>
             </div>
 
             <div class="space-y-3">
@@ -251,7 +272,6 @@
                     Ingresar
                 </button>
             </div>
-            <p class="text-[10px] text-gray-400 text-center">PIN de prueba por defecto: <b>1234</b></p>
         </div>
     </div>
 
@@ -262,7 +282,7 @@
                 <h3 class="text-xl font-bold text-blue-900">Únete como Técnico</h3>
                 <button onclick="closeJoinModal()" class="text-gray-400 hover:text-gray-600 text-2xl font-bold">&times;</button>
             </div>
-            <p class="text-xs text-gray-500">Crea tu perfil profesional en la plataforma.</p>
+            <p class="text-xs text-gray-500">Tu solicitud pasará por una revisión antes de activarse en el mapa.</p>
             
             <form id="techApplyForm" class="space-y-3">
                 <input type="text" id="techApplicantName" required placeholder="Nombre completo" class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -275,9 +295,28 @@
                 <input type="password" id="techApplicantPin" required placeholder="Crea tu PIN de acceso (4 dígitos)" maxlength="4" class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 
                 <button type="submit" class="w-full bg-blue-900 hover:bg-blue-800 text-white py-3 rounded-xl font-bold text-sm transition">
-                    Crear Perfil e Ingresar
+                    Enviar Solicitud de Registro
                 </button>
             </form>
+        </div>
+    </div>
+
+    <!-- MODAL INGRESO ADMIN -->
+    <div id="adminAuthModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4">
+        <div class="bg-white p-6 rounded-2xl max-w-sm w-full shadow-2xl space-y-4">
+            <div class="text-center">
+                <div class="text-4xl mb-1">⚙️</div>
+                <h3 class="text-xl font-bold text-gray-900">Acceso Administrador</h3>
+                <p class="text-xs text-gray-500">Ingresa la clave de control maestro.</p>
+            </div>
+            <div>
+                <input type="password" id="adminPinInput" placeholder="PIN Admin (ej. 9999)" class="w-full text-center text-xl tracking-widest p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-700">
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button onclick="closeAdminAuthModal()" class="w-1/2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2.5 rounded-xl text-sm">Cancelar</button>
+                <button onclick="validateAdminPin()" class="w-1/2 bg-gray-900 hover:bg-gray-800 text-white font-bold py-2.5 rounded-xl text-sm">Ingresar</button>
+            </div>
+            <p class="text-[10px] text-gray-400 text-center">PIN por defecto: <b>9999</b></p>
         </div>
     </div>
 
@@ -293,7 +332,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // CONFIGURACIÓN DE FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyAp3qEInlZ68nVW0vX4abykOx3U2PdhoXI",
             authDomain: "handyman-web-760c3.firebaseapp.com",
@@ -309,14 +347,12 @@
         }
         const db = firebase.database();
 
-        // IDENTIFICADOR ÚNICO DE DISPOSITIVO CLIENTE
         let myClientId = localStorage.getItem('handyman_client_id');
         if (!myClientId) {
             myClientId = 'CLIENT-' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('handyman_client_id', myClientId);
         }
 
-        // SERVIDOR DE MAPAS CARTO
         const MAP_TILE_URL = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
         const MAP_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
 
@@ -343,9 +379,8 @@
         };
 
         let userLat = 8.9824, userLng = -79.5199;
-
-        // Quitamos los técnicos iniciales por defecto para que el mapa inicie limpio si Firebase está vacío
-        let technicians = [];
+        let allTechnicians = [];      // Todos los registrados
+        let technicians = [];         // Solo los aprobados (para clientes y mapa general)
         let activeTechUser = null;
         let myOrders = [];
         let map, userMarker;
@@ -356,14 +391,22 @@
         db.ref('technicians').on('value', (snapshot) => {
             const data = snapshot.val();
             if (data) {
-                technicians = Object.values(data);
+                allTechnicians = Object.values(data);
+                // Filtramos solo los que tengan approved: true
+                technicians = allTechnicians.filter(t => t.approved === true);
             } else {
+                allTechnicians = [];
                 technicians = [];
             }
             populateTechLoginSelect();
             updateServiceTasks();
             if (map) renderTechniciansOnMap();
             if (techMap && activeTechUser) renderTechPortalMap();
+            
+            // Si el panel admin está abierto, actualizamos su vista
+            if (!document.getElementById('page-admin-portal').classList.contains('hidden')) {
+                renderAdminPortal();
+            }
         });
 
         db.ref('orders').on('value', (snapshot) => {
@@ -377,6 +420,7 @@
             document.getElementById('page-landing').classList.add('hidden');
             document.getElementById('page-app').classList.add('hidden');
             document.getElementById('page-tech-portal').classList.add('hidden');
+            document.getElementById('page-admin-portal').classList.add('hidden');
 
             if (sectionName === 'landing') {
                 document.getElementById('page-landing').classList.remove('hidden');
@@ -391,6 +435,9 @@
                 document.getElementById('page-tech-portal').classList.remove('hidden');
                 initTechMap();
                 renderIndividualTechPortal();
+            } else if (sectionName === 'admin-portal') {
+                document.getElementById('page-admin-portal').classList.remove('hidden');
+                renderAdminPortal();
             }
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -405,12 +452,66 @@
             document.getElementById('techPinInput').value = '';
         }
 
+        function openAdminAuthModal() { document.getElementById('adminAuthModal').classList.remove('hidden'); }
+        function closeAdminAuthModal() { 
+            document.getElementById('adminAuthModal').classList.add('hidden');
+            document.getElementById('adminPinInput').value = '';
+        }
+
+        function validateAdminPin() {
+            const pin = document.getElementById('adminPinInput').value;
+            if (pin === "9999") { // PIN maestro de admin
+                closeAdminAuthModal();
+                showSection('admin-portal');
+            } else {
+                alert("PIN de administrador incorrecto.");
+            }
+        }
+
+        function renderAdminPortal() {
+            const container = document.getElementById('adminPendingList');
+            const pendingTechs = allTechnicians.filter(t => !t.approved);
+
+            if (pendingTechs.length === 0) {
+                container.innerHTML = `<div class="p-6 text-center text-gray-400 bg-gray-50 rounded-xl">No hay solicitudes pendientes de aprobación.</div>`;
+                return;
+            }
+
+            container.innerHTML = pendingTechs.map(t => `
+                <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 flex justify-between items-center">
+                    <div>
+                        <span class="text-xs font-bold text-amber-600 bg-amber-100 px-2 py-0.5 rounded">Pendiente</span>
+                        <h4 class="font-bold text-gray-900 text-base mt-1">👷‍♂️ ${t.name}</h4>
+                        <p class="text-xs text-gray-600">Especialidad: <b>${t.category}</b> • ID: ${t.id}</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="approveTech('${t.id}')" class="bg-green-600 hover:bg-green-700 text-white font-bold px-3 py-2 rounded-xl text-xs">✅ Aprobar</button>
+                        <button onclick="rejectTech('${t.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 font-bold px-3 py-2 rounded-xl text-xs">❌ Rechazar</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function approveTech(techId) {
+            db.ref('technicians/' + techId).update({ approved: true })
+                .then(() => alert("¡Técnico aprobado con éxito! Ya está visible en la plataforma."))
+                .catch(err => alert("Error: " + err.message));
+        }
+
+        function rejectTech(techId) {
+            if (confirm("¿Estás seguro de eliminar esta solicitud?")) {
+                db.ref('technicians/' + techId).remove()
+                    .then(() => alert("Solicitud rechazada y eliminada."))
+                    .catch(err => alert("Error: " + err.message));
+            }
+        }
+
         function populateTechLoginSelect() {
             const select = document.getElementById('techSelectLogin');
             if(!select) return;
             
             if (technicians.length === 0) {
-                select.innerHTML = `<option value="">No hay técnicos registrados</option>`;
+                select.innerHTML = `<option value="">No hay técnicos aprobados</option>`;
                 return;
             }
 
@@ -427,19 +528,14 @@
                 activeTechUser = tech;
                 closeTechAuthModal();
                 showSection('tech-portal');
-
                 startContinuousGPS();
             } else {
-                alert("PIN incorrecto o ningún técnico seleccionado.");
+                alert("PIN incorrecto o técnico no seleccionado.");
             }
         }
 
         function startContinuousGPS() {
-            if (!navigator.geolocation) {
-                alert("Tu navegador no soporta geolocalización.");
-                return;
-            }
-
+            if (!navigator.geolocation) return;
             if (watchPositionId) navigator.geolocation.clearWatch(watchPositionId);
 
             watchPositionId = navigator.geolocation.watchPosition(
@@ -452,11 +548,7 @@
                     if (activeTechUser) {
                         activeTechUser.lat = newLat;
                         activeTechUser.lng = newLng;
-
-                        db.ref('technicians/' + activeTechUser.id).update({
-                            lat: newLat,
-                            lng: newLng
-                        }).catch(err => console.error("Error GPS:", err));
+                        db.ref('technicians/' + activeTechUser.id).update({ lat: newLat, lng: newLng });
                     }
 
                     const gpsStatus = document.getElementById('tech-gps-status');
@@ -484,23 +576,18 @@
         function initTechMap() {
             if (!techMap) {
                 techMap = L.map('techMap').setView([userLat, userLng], 13);
-                L.tileLayer(MAP_TILE_URL, {
-                    attribution: MAP_ATTRIBUTION,
-                    subdomains: 'abcd',
-                    maxZoom: 19
-                }).addTo(techMap);
+                L.tileLayer(MAP_TILE_URL, { attribution: MAP_ATTRIBUTION, subdomains: 'abcd', maxZoom: 19 }).addTo(techMap);
             }
             setTimeout(() => techMap.invalidateSize(), 200);
         }
 
         function renderTechPortalMap() {
             if (!techMap || !activeTechUser) return;
-
             techMapMarkers.forEach(m => techMap.removeLayer(m));
             techMapMarkers = [];
 
             const techMarker = L.marker([activeTechUser.lat, activeTechUser.lng]).addTo(techMap)
-                .bindPopup(`<b>${activeTechUser.photo || '👷‍♂️'} Tu Posición</b><br><span class="text-xs text-green-600 font-bold">Transmitiendo GPS</span>`);
+                .bindPopup(`<b>${activeTechUser.photo || '👷‍♂️'} Tu Posición</b>`);
             techMapMarkers.push(techMarker);
 
             const activeTechOrders = myOrders.filter(o => 
@@ -511,17 +598,15 @@
             activeTechOrders.forEach(order => {
                 if (order.clientLat && order.clientLng) {
                     const clientMarker = L.marker([order.clientLat, order.clientLng]).addTo(techMap)
-                        .bindPopup(`<b>👤 Cliente: ${order.client}</b><br>🛠️ ${order.task}<br>📍 ${order.zone}<br><b>Estado:</b> ${order.status}`);
+                        .bindPopup(`<b>👤 Cliente: ${order.client}</b><br>🛠️ ${order.task}<br><b>Estado:</b> ${order.status}`);
                     techMapMarkers.push(clientMarker);
                 }
             });
-
             techMap.setView([activeTechUser.lat, activeTechUser.lng], 13);
         }
 
         function renderIndividualTechPortal() {
             if (!activeTechUser) return;
-
             document.getElementById('techProfileName').textContent = `${activeTechUser.photo || '👷‍♂️'} ${activeTechUser.name}`;
             document.getElementById('techProfileCategory').textContent = `Especialidad: ${activeTechUser.category}`;
             document.getElementById('techProfileId').textContent = activeTechUser.id;
@@ -529,22 +614,15 @@
 
             const techOrders = myOrders.filter(o => o.techId === activeTechUser.id || o.techName === activeTechUser.name);
             const completedOrders = techOrders.filter(o => o.status.includes('Completado') || o.status.includes('Aceptado'));
-
             const earnings = completedOrders.reduce((sum, o) => sum + o.cost, 0);
 
             document.getElementById('tech-earnings').textContent = `$${earnings.toFixed(2)}`;
             document.getElementById('tech-accepted-count').textContent = completedOrders.length;
-
             renderTechPortalMap();
 
             const container = document.getElementById('techIncomingJobs');
-
             if (techOrders.length === 0) {
-                container.innerHTML = `
-                    <div class="bg-white p-8 text-center rounded-2xl border border-gray-200 text-gray-400">
-                        No hay pedidos asignados para <b>${activeTechUser.name}</b>.
-                    </div>
-                `;
+                container.innerHTML = `<div class="bg-white p-8 text-center rounded-2xl border border-gray-200 text-gray-400">No hay pedidos asignados.</div>`;
                 return;
             }
 
@@ -554,7 +632,6 @@
                         <span class="text-xs font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded">Pedido #${job.id}</span>
                         <h4 class="text-lg font-bold text-gray-900">${job.task}</h4>
                         <p class="text-xs text-gray-600">👤 Cliente: <b>${job.client}</b> • 📍 ${job.zone}</p>
-                        <p class="text-xs text-gray-500 italic">"${job.detail}"</p>
                         <span class="inline-block mt-1 text-xs font-bold px-2 py-0.5 rounded-full ${job.status.includes('Completado') ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}">${job.status}</span>
                     </div>
                     <div class="text-right">
@@ -563,42 +640,27 @@
                             <button onclick="acceptJob('${job.id}')" class="bg-green-600 hover:bg-green-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl">✅ Aceptar Trabajo</button>
                         ` : job.status.includes('Aceptado') ? `
                             <button onclick="completeJob('${job.id}')" class="bg-blue-900 hover:bg-blue-800 text-white text-xs font-bold px-3 py-1.5 rounded-xl">🏁 Finalizar</button>
-                        ` : `
-                            <span class="text-xs font-bold text-green-600">✨ Completado</span>
-                        `}
+                        ` : `<span class="text-xs font-bold text-green-600">✨ Completado</span>`}
                     </div>
                 </div>
             `).join('');
         }
 
-        function acceptJob(orderId) {
-            db.ref('orders/' + orderId).update({ status: "Aceptado 🚗 (En Camino)" });
-        }
-
+        function acceptJob(orderId) { db.ref('orders/' + orderId).update({ status: "Aceptado 🚗 (En Camino)" }); }
         function completeJob(orderId) {
-            db.ref('orders/' + orderId).update({
-                status: "Servicio Completado 🏁",
-                clientLat: null,
-                clientLng: null
-            }).then(() => {
+            db.ref('orders/' + orderId).update({ status: "Servicio Completado 🏁", clientLat: null, clientLng: null }).then(() => {
                 if (activeTechUser) renderTechPortalMap();
             });
         }
 
-        // AQUÍ SE CONTROLA QUE NO APAREZCAN TÉCNICOS SI NO HAY REGISTRADOS
         function renderTechniciansOnMap() {
             if (!map) return;
-
-            // Limpiamos los marcadores existentes en el mapa antes de evaluar
             Object.keys(clientMapMarkers).forEach(techId => {
                 map.removeLayer(clientMapMarkers[techId]);
                 delete clientMapMarkers[techId];
             });
 
-            // Si no hay técnicos, salimos inmediatamente para dejar el mapa sin marcadores de técnicos
-            if (!technicians || technicians.length === 0) {
-                return;
-            }
+            if (!technicians || technicians.length === 0) return;
 
             technicians.forEach(tech => {
                 if (tech.lat && tech.lng) {
@@ -610,12 +672,7 @@
 
         function initMap() {
             map = L.map('map').setView([userLat, userLng], 13);
-            L.tileLayer(MAP_TILE_URL, {
-                attribution: MAP_ATTRIBUTION,
-                subdomains: 'abcd',
-                maxZoom: 19
-            }).addTo(map);
-
+            L.tileLayer(MAP_TILE_URL, { attribution: MAP_ATTRIBUTION, subdomains: 'abcd', maxZoom: 19 }).addTo(map);
             getUserLocation();
             renderTechniciansOnMap();
         }
@@ -634,9 +691,7 @@
                         setUserMarker(userLat, userLng, "📍 Tu Ubicación Detectada");
                         if (map) map.setView([userLat, userLng], 14);
                     },
-                    (error) => {
-                        console.warn("Permiso de GPS denegado o error de lectura:", error);
-                    },
+                    (error) => console.warn("GPS error:", error),
                     { enableHighAccuracy: true }
                 );
             }
@@ -647,17 +702,14 @@
                 document.getElementById(`tab-${tab}`).classList.add('hidden');
                 document.getElementById(`btn-${tab}`).classList.remove('bg-blue-900', 'text-white');
             });
-
             document.getElementById(`tab-${tabName}`).classList.remove('hidden');
             document.getElementById(`btn-${tabName}`).classList.add('bg-blue-900', 'text-white');
-
             if (tabName === 'request' && map) setTimeout(() => map.invalidateSize(), 200);
         }
 
         function updateServiceTasks() {
             const categorySelect = document.getElementById('serviceCategory');
             if(!categorySelect) return;
-
             const category = categorySelect.value;
             const taskSelect = document.getElementById('serviceTask');
             const tasks = serviceCatalog[category] || [];
@@ -669,7 +721,7 @@
 
             techSelect.innerHTML = filteredTechs.length > 0 
                 ? filteredTechs.map(t => `<option value="${t.id}">${t.photo || '👷‍♂️'} ${t.name} (${t.rating || '5.0 ⭐'})</option>`).join('')
-                : `<option value="">No hay técnicos en esta área</option>`;
+                : `<option value="">No hay técnicos aprobados en esta área</option>`;
 
             calculateCost();
         }
@@ -678,10 +730,7 @@
             const taskSelect = document.getElementById('serviceTask');
             const zoneSelect = document.getElementById('locationZone');
             if(!taskSelect || !zoneSelect) return 0;
-
-            const taskCost = parseFloat(taskSelect.value) || 0;
-            const travelCost = parseFloat(zoneSelect.value) || 0;
-            const total = taskCost + travelCost;
+            const total = (parseFloat(taskSelect.value) || 0) + (parseFloat(zoneSelect.value) || 0);
             document.getElementById('displayTotal').textContent = `$${total.toFixed(2)}`;
             return total;
         }
@@ -690,7 +739,6 @@
 
         document.getElementById('orderForm').addEventListener('submit', function(e) {
             e.preventDefault();
-
             const selectedTechId = document.getElementById('selectedTech').value;
             const assignedTech = technicians.find(t => t.id === selectedTechId);
 
@@ -701,11 +749,10 @@
 
             const zoneSelect = document.getElementById('locationZone');
             const selectedOption = zoneSelect.options[zoneSelect.selectedIndex];
-
             const taskSelect = document.getElementById('serviceTask');
             const selectedTaskName = taskSelect.options[taskSelect.selectedIndex].text.split(' ($')[0];
-
             const orderId = Date.now().toString().slice(-4);
+
             const newOrder = {
                 id: orderId,
                 clientId: myClientId,
@@ -725,28 +772,23 @@
 
             db.ref('orders/' + orderId).set(newOrder)
                 .then(() => {
-                    alert(`¡Solicitud #${orderId} enviada con éxito en tu ubicación actual!`);
+                    alert(`¡Solicitud #${orderId} enviada con éxito!`);
                     switchTab('jobs');
                     this.reset();
                     updateServiceTasks();
                 })
-                .catch((error) => {
-                    alert("Error en Firebase: " + error.message);
-                });
+                .catch((error) => alert("Error: " + error.message));
         });
 
-        // VISTA PRIVADA DE PEDIDOS PARA CADA CLIENTE
         function updateOrdersUI() {
             const badge = document.getElementById('job-badge');
             const jobsList = document.getElementById('jobsList');
             if(!badge || !jobsList) return;
 
             const clientOnlyOrders = myOrders.filter(o => o.clientId === myClientId);
-
             if (clientOnlyOrders.length > 0) {
                 badge.textContent = clientOnlyOrders.length;
                 badge.classList.remove('hidden');
-
                 jobsList.innerHTML = clientOnlyOrders.map(order => `
                     <div class="bg-white p-5 rounded-2xl shadow-md border-l-4 ${order.status.includes('Completado') ? 'border-green-500' : 'border-amber-500'} flex justify-between items-center">
                         <div>
@@ -762,11 +804,7 @@
                 `).join('');
             } else {
                 badge.classList.add('hidden');
-                jobsList.innerHTML = `
-                    <div class="bg-white p-8 text-center rounded-2xl border border-gray-200 text-gray-400">
-                        Aún no has enviado ninguna solicitud desde este dispositivo.
-                    </div>
-                `;
+                jobsList.innerHTML = `<div class="bg-white p-8 text-center rounded-2xl border border-gray-200 text-gray-400">Aún no has enviado ninguna solicitud.</div>`;
             }
         }
 
@@ -779,7 +817,7 @@
             const category = document.getElementById('techApplicantCategory').value;
             const pin = document.getElementById('techApplicantPin').value;
 
-            const techId = `TECH-00${technicians.length + 1}`;
+            const techId = `TECH-00${allTechnicians.length + 1}`;
             const newTech = {
                 id: techId,
                 pin: pin,
@@ -788,16 +826,17 @@
                 rating: "5.0 ⭐",
                 photo: "👷‍♂️",
                 lat: userLat,
-                lng: userLng
+                lng: userLng,
+                approved: false // <-- CLAVE: Queda pendiente por defecto
             };
 
             db.ref('technicians/' + techId).set(newTech)
                 .then(() => {
                     closeJoinModal();
                     this.reset();
-                    alert(`¡Perfil creado con éxito! Tu ID es ${newTech.id} y tu PIN es ${newTech.pin}`);
+                    alert(`¡Solicitud enviada con éxito! Un administrador debe aprobar tu perfil antes de que aparezca en el mapa. Tu ID es ${techId}`);
                 })
-                .catch((error) => alert("Error al registrar técnico: " + error.message));
+                .catch((error) => alert("Error al registrar: " + error.message));
         });
 
         window.onload = () => {
