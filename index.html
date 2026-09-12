@@ -224,7 +224,7 @@
         </div>
     </div>
 
-    <!-- 4. PANEL DE ADMINISTRACIÓN (NUEVO) -->
+    <!-- 4. PANEL DE ADMINISTRACIÓN -->
     <div id="page-admin-portal" class="hidden max-w-4xl mx-auto p-4 flex-grow w-full space-y-6">
         <div class="bg-gray-900 text-white p-6 rounded-2xl shadow-lg flex justify-between items-center">
             <div>
@@ -275,29 +275,39 @@
         </div>
     </div>
 
-    <!-- MODAL REGISTRO NUEVO TÉCNICO -->
+    <!-- MODAL CONTACTO PARA NUEVO TÉCNICO (MODIFICADO) -->
     <div id="joinModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
         <div class="bg-white p-6 rounded-2xl max-w-md w-full shadow-2xl space-y-4">
             <div class="flex justify-between items-center">
-                <h3 class="text-xl font-bold text-blue-900">Únete como Técnico</h3>
+                <h3 class="text-xl font-bold text-blue-900">💼 Únete como Técnico</h3>
                 <button onclick="closeJoinModal()" class="text-gray-400 hover:text-gray-600 text-2xl font-bold">&times;</button>
             </div>
-            <p class="text-xs text-gray-500">Tu solicitud pasará por una revisión antes de activarse en el mapa.</p>
+            <p class="text-xs text-gray-500">Para un mayor control de seguridad, comunícate directamente con la administración para registrarte y recibir tu PIN.</p>
             
-            <form id="techApplyForm" class="space-y-3">
-                <input type="text" id="techApplicantName" required placeholder="Nombre completo" class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <select id="techApplicantCategory" class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="Plomería">🚰 Plomería</option>
-                    <option value="Electricidad">⚡ Electricidad</option>
-                    <option value="Aire Acondicionado">❄️ Aire Acondicionado</option>
-                    <option value="Techos y Tejados">🏠 Techos y Tejados</option>
-                </select>
-                <input type="password" id="techApplicantPin" required placeholder="Crea tu PIN de acceso (4 dígitos)" maxlength="4" class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                
-                <button type="submit" class="w-full bg-blue-900 hover:bg-blue-800 text-white py-3 rounded-xl font-bold text-sm transition">
-                    Enviar Solicitud de Registro
-                </button>
-            </form>
+            <div class="space-y-3 pt-2">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Tu Nombre Completo</label>
+                    <input type="text" id="joinName" placeholder="Ej. Roberto Gómez" class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Tu Especialidad</label>
+                    <select id="joinCategory" class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="Plomería">🚰 Plomería</option>
+                        <option value="Electricidad">⚡ Electricidad</option>
+                        <option value="Aire Acondicionado">❄️ Aire Acondicionado</option>
+                        <option value="Techos y Tejados">🏠 Techos y Tejados</option>
+                    </select>
+                </div>
+
+                <div class="pt-2 grid grid-cols-1 gap-2">
+                    <button onclick="contactViaWhatsApp()" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2 shadow-md">
+                        💬 Enviar Solicitud por WhatsApp
+                    </button>
+                    <button onclick="contactViaEmail()" class="w-full bg-blue-900 hover:bg-blue-800 text-white py-3 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2">
+                        ✉️ Enviar Solicitud por Correo
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -379,8 +389,8 @@
         };
 
         let userLat = 8.9824, userLng = -79.5199;
-        let allTechnicians = [];      // Todos los registrados
-        let technicians = [];         // Solo los aprobados (para clientes y mapa general)
+        let allTechnicians = [];      
+        let technicians = [];         
         let activeTechUser = null;
         let myOrders = [];
         let map, userMarker;
@@ -392,7 +402,6 @@
             const data = snapshot.val();
             if (data) {
                 allTechnicians = Object.values(data);
-                // Filtramos solo los que tengan approved: true
                 technicians = allTechnicians.filter(t => t.approved === true);
             } else {
                 allTechnicians = [];
@@ -403,7 +412,6 @@
             if (map) renderTechniciansOnMap();
             if (techMap && activeTechUser) renderTechPortalMap();
             
-            // Si el panel admin está abierto, actualizamos su vista
             if (!document.getElementById('page-admin-portal').classList.contains('hidden')) {
                 renderAdminPortal();
             }
@@ -460,7 +468,7 @@
 
         function validateAdminPin() {
             const pin = document.getElementById('adminPinInput').value;
-            if (pin === "9999") { // PIN maestro de admin
+            if (pin === "9999") { 
                 closeAdminAuthModal();
                 showSection('admin-portal');
             } else {
@@ -811,33 +819,41 @@
         function openJoinModal() { document.getElementById('joinModal').classList.remove('hidden'); }
         function closeJoinModal() { document.getElementById('joinModal').classList.add('hidden'); }
 
-        document.getElementById('techApplyForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = document.getElementById('techApplicantName').value;
-            const category = document.getElementById('techApplicantCategory').value;
-            const pin = document.getElementById('techApplicantPin').value;
+        // FUNCIONES DE CONTACTO DIRECTO (WHATSAPP Y CORREO)
+        function contactViaWhatsApp() {
+            const name = document.getElementById('joinName').value.trim();
+            const category = document.getElementById('joinCategory').value;
 
-            const techId = `TECH-00${allTechnicians.length + 1}`;
-            const newTech = {
-                id: techId,
-                pin: pin,
-                name: name,
-                category: category,
-                rating: "5.0 ⭐",
-                photo: "👷‍♂️",
-                lat: userLat,
-                lng: userLng,
-                approved: false // <-- CLAVE: Queda pendiente por defecto
-            };
+            if (!name) {
+                alert("Por favor ingresa tu nombre completo antes de continuar.");
+                document.getElementById('joinName').focus();
+                return;
+            }
 
-            db.ref('technicians/' + techId).set(newTech)
-                .then(() => {
-                    closeJoinModal();
-                    this.reset();
-                    alert(`¡Solicitud enviada con éxito! Un administrador debe aprobar tu perfil antes de que aparezca en el mapa. Tu ID es ${techId}`);
-                })
-                .catch((error) => alert("Error al registrar: " + error.message));
-        });
+            // Cambia el número de teléfono por el tuyo en formato internacional sin símbolos (ej: 50760000000 para Panamá)
+            const tuNumeroWhatsApp = "50700000000"; 
+            const mensaje = encodeURIComponent(`Hola, soy ${name} y me quiero registrar como técnico especialista en ${category} en Handyman Express. ¿Me ayudas con mi cuenta y PIN?`);
+            
+            window.open(`https://wa.me/${tuNumeroWhatsApp}?text=${mensaje}`, '_blank');
+        }
+
+        function contactViaEmail() {
+            const name = document.getElementById('joinName').value.trim();
+            const category = document.getElementById('joinCategory').value;
+
+            if (!name) {
+                alert("Por favor ingresa tu nombre completo antes de continuar.");
+                document.getElementById('joinName').focus();
+                return;
+            }
+
+            // Cambia este correo por el tuyo personal
+            const tuCorreo = "tucorreo@example.com"; 
+            const asunto = encodeURIComponent(`Solicitud de Registro - Handyman Express`);
+            const cuerpo = encodeURIComponent(`Hola administrador,\n\nMe gustaría unirme como técnico a la plataforma.\n\nNombre: ${name}\nEspecialidad: ${category}\n\nQuedo a la espera de las instrucciones.`);
+            
+            window.open(`mailto:${tuCorreo}?subject=${asunto}&body=${cuerpo}`, '_blank');
+        }
 
         window.onload = () => {
             getUserLocation();
