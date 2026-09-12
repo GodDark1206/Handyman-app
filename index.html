@@ -4,23 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Handyman - Servicios Técnicos Profesionales</title>
-    <!-- Tailwind CSS para diseño moderno -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 text-gray-800">
 
     <!-- Navegación -->
-    <nav class="bg-blue-900 text-white p-4 flex justify-between items-center shadow-lg">
+    <nav class="bg-blue-900 text-white p-4 flex justify-between items-center shadow-lg sticky top-0 z-50">
         <h1 class="text-xl font-bold">🛠️ Handyman App</h1>
-        <a href="#contacto" class="bg-amber-500 hover:bg-amber-600 text-gray-900 px-4 py-2 rounded-lg font-semibold transition">Solicitar Trabajo</a>
+        <a href="#cotizacion" class="bg-amber-500 hover:bg-amber-600 text-gray-900 px-4 py-2 rounded-lg font-semibold transition">Cotizar Ahora</a>
     </nav>
 
     <!-- Hero / Encabezado -->
     <section class="text-center py-16 px-4 bg-blue-800 text-white">
         <h2 class="text-4xl font-extrabold mb-4">Soluciones Rápidas de Plomería y Electricidad</h2>
         <p class="text-lg max-w-2xl mx-auto mb-6">Trabajos garantizados para tu hogar o negocio. Mantenimiento preventivo y emergencias.</p>
-        <a href="https://wa.me/1234567890?text=Hola,%20necesito%20una%20cotizacion" target="_blank" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl font-bold text-lg inline-flex items-center gap-2 shadow-md transition">
-            💬 Contactar por WhatsApp
+        <a href="#cotizacion" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl font-bold text-lg inline-flex items-center gap-2 shadow-md transition">
+            📋 Calcular Cotización
         </a>
     </section>
 
@@ -54,9 +54,108 @@
         </div>
     </section>
 
+    <!-- Formulario de Cotización Interactivo -->
+    <section id="cotizacion" class="max-w-3xl mx-auto py-12 px-4">
+        <div class="bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
+            <h3 class="text-2xl font-bold text-blue-900 mb-2 text-center">Calcula tu Cotización Básica</h3>
+            <p class="text-center text-gray-500 mb-6">Selecciona los datos de tu trabajo para estimar el costo.</p>
+
+            <form id="quoteForm" class="space-y-4">
+                <!-- Nombre del cliente -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Tu Nombre</label>
+                    <input type="text" id="clientName" required placeholder="Ej. María López" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+
+                <!-- Selección de servicio -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Tipo de Servicio</label>
+                    <select id="serviceType" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <option value="25" data-category="Plomería">Plomería - Fuga Básica / Grifería ($25 estimación inicial)</option>
+                        <option value="35" data-category="Plomería">Plomería - Destape / Cañería ($35 estimación inicial)</option>
+                        <option value="20" data-category="Electricidad">Electricidad - Instalación de Lámpara/Socket ($20 estimación inicial)</option>
+                        <option value="40" data-category="Electricidad">Electricidad - Revisión de Tablero / Corto ($40 estimación inicial)</option>
+                    </select>
+                </div>
+
+                <!-- Opción de Emergencia -->
+                <div class="flex items-center gap-3 py-2">
+                    <input type="checkbox" id="isEmergency" class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500">
+                    <label for="isEmergency" class="text-sm font-medium text-gray-700">Atención Prioritaria / Emergencia (+ $15)</label>
+                </div>
+
+                <!-- Descripción del problema -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Detalle del Trabajo</label>
+                    <textarea id="description" rows="3" placeholder="Describe brevemente lo que necesitas reparar o instalar..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
+                </div>
+
+                <!-- Visor de Precio Estimado -->
+                <div class="bg-blue-50 p-4 rounded-xl text-center border border-blue-200 mt-4">
+                    <span class="text-sm text-gray-600 block">Costo Estimado Aproximado:</span>
+                    <span id="totalPrice" class="text-3xl font-extrabold text-blue-900">$25.00</span>
+                </div>
+
+                <!-- Botón de envío a WhatsApp -->
+                <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-bold text-lg shadow-md transition flex justify-center items-center gap-2">
+                    💬 Enviar Cotización por WhatsApp
+                </button>
+            </form>
+        </div>
+    </section>
+
     <footer class="bg-gray-900 text-gray-400 text-center py-6 mt-12">
         <p>&copy; 2026 Handyman App - Proyecto de Portafolio</p>
     </footer>
 
+    <!-- LÓGICA EN JAVASCRIPT -->
+    <script>
+        // Referencias a los elementos del formulario
+        const quoteForm = document.getElementById('quoteForm');
+        const serviceType = document.getElementById('serviceType');
+        const isEmergency = document.getElementById('isEmergency');
+        const totalPrice = document.getElementById('totalPrice');
+
+        // Número de teléfono de destino (reemplazar con el número real de WhatsApp con código de país)
+        const PHONE_NUMBER = "50760000000"; // Ejemplo para Panamá (+507)
+
+        // Función para calcular y actualizar el precio en pantalla
+        function calculateTotal() {
+            let basePrice = parseFloat(serviceType.value);
+            let emergencyFee = isEmergency.checked ? 15 : 0;
+            let total = basePrice + emergencyFee;
+
+            totalPrice.textContent = `$${total.toFixed(2)}`;
+            return total;
+        }
+
+        // Detectar cambios en las opciones para actualizar el precio en tiempo real
+        serviceType.addEventListener('change', calculateTotal);
+        isEmergency.addEventListener('change', calculateTotal);
+
+        // Evento al enviar el formulario
+        quoteForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const clientName = document.getElementById('clientName').value.trim();
+            const selectedOption = serviceType.options[serviceType.selectedIndex];
+            const serviceText = selectedOption.text;
+            const description = document.getElementById('description').value.trim();
+            const emergencyText = isEmergency.checked ? 'SÍ (Prioritario)' : 'No';
+            const finalTotal = calculateTotal();
+
+            // Construcción del mensaje formateado para WhatsApp
+            const message = `*NUEVA SOLICITUD DE COTIZACIÓN - HANDYMAN*%0A%0A` +
+                `👤 *Cliente:* ${encodeURIComponent(clientName)}%0A` +
+                `🛠️ *Servicio:* ${encodeURIComponent(serviceText)}%0A` +
+                `🚨 *Atención de Emergencia:* ${emergencyText}%0A` +
+                `📝 *Detalle:* ${encodeURIComponent(description || 'Sin detalles adicionales')}%0A` +
+                `💰 *Estimación Inicial:* $${finalTotal.toFixed(2)}`;
+
+            // Crear enlace de WhatsApp y abrirlo en una nueva pestaña
+            const whatsappUrl = `https://wa.me/${PHONE_NUMBER}?text=${message}`;
+            window.open(whatsappUrl, '_blank');
+        });
+    </script>
 </body>
 </html>
