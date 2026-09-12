@@ -327,7 +327,7 @@
                 { name: "Instalación de Calentador de Agua", price: 85 }
             ],
             "Electricidad": [
-                { name: "Reparación de Cortocircuito / Jamón", price: 30 },
+                { name: "Reparación de Cortocircuito / Breaker", price: 30 },
                 { name: "Instalación de Lámparas / Abanicos", price: 35 },
                 { name: "Cableado / Puntos Nuevos", price: 60 }
             ],
@@ -344,13 +344,8 @@
 
         let userLat = 8.9824, userLng = -79.5199;
 
-        let initialTechnicians = [
-            { id: "TECH-001", pin: "1234", name: "Roberto Gómez", category: "Plomería", rating: "4.9 ⭐", photo: "👨‍🔧", lat: 8.9824, lng: -79.5199 },
-            { id: "TECH-002", pin: "1234", name: "Carlos Rodríguez", category: "Electricidad", rating: "5.0 ⭐", photo: "🧑‍🔧", lat: 8.9824, lng: -79.5199 },
-            { id: "TECH-003", pin: "1234", name: "Javier López", category: "Aire Acondicionado", rating: "4.8 ⭐", photo: "👨‍🏭", lat: 8.9824, lng: -79.5199 }
-        ];
-
-        let technicians = [...initialTechnicians];
+        // Quitamos los técnicos iniciales por defecto para que el mapa inicie limpio si Firebase está vacío
+        let technicians = [];
         let activeTechUser = null;
         let myOrders = [];
         let map, userMarker;
@@ -358,21 +353,12 @@
         let clientMapMarkers = {};
         let watchPositionId = null;
 
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition((pos) => {
-                userLat = pos.coords.latitude;
-                userLng = pos.coords.longitude;
-                initialTechnicians.forEach(t => { t.lat = userLat; t.lng = userLng; });
-            });
-        }
-
         db.ref('technicians').on('value', (snapshot) => {
             const data = snapshot.val();
             if (data) {
                 technicians = Object.values(data);
             } else {
-                initialTechnicians.forEach(t => db.ref('technicians/' + t.id).set(t));
-                technicians = [...initialTechnicians];
+                technicians = [];
             }
             populateTechLoginSelect();
             updateServiceTasks();
@@ -422,7 +408,13 @@
         function populateTechLoginSelect() {
             const select = document.getElementById('techSelectLogin');
             if(!select) return;
-            select.innerHTML = technicians.map(t => `<option value="${t.id}">${t.photo} ${t.name} (${t.category})</option>`).join('');
+            
+            if (technicians.length === 0) {
+                select.innerHTML = `<option value="">No hay técnicos registrados</option>`;
+                return;
+            }
+
+            select.innerHTML = technicians.map(t => `<option value="${t.id}">${t.photo || '👷‍♂️'} ${t.name} (${t.category})</option>`).join('');
         }
 
         function validateTechPin() {
@@ -438,7 +430,7 @@
 
                 startContinuousGPS();
             } else {
-                alert("PIN incorrecto para el técnico seleccionado.");
+                alert("PIN incorrecto o ningún técnico seleccionado.");
             }
         }
 
@@ -508,7 +500,7 @@
             techMapMarkers = [];
 
             const techMarker = L.marker([activeTechUser.lat, activeTechUser.lng]).addTo(techMap)
-                .bindPopup(`<b>${activeTechUser.photo} Tu Posición</b><br><span class="text-xs text-green-600 font-bold">Transmitiendo GPS</span>`);
+                .bindPopup(`<b>${activeTechUser.photo || '👷‍♂️'} Tu Posición</b><br><span class="text-xs text-green-600 font-bold">Transmitiendo GPS</span>`);
             techMapMarkers.push(techMarker);
 
             const activeTechOrders = myOrders.filter(o => 
@@ -530,10 +522,10 @@
         function renderIndividualTechPortal() {
             if (!activeTechUser) return;
 
-            document.getElementById('techProfileName').textContent = `${activeTechUser.photo} ${activeTechUser.name}`;
+            document.getElementById('techProfileName').textContent = `${activeTechUser.photo || '👷‍♂️'} ${activeTechUser.name}`;
             document.getElementById('techProfileCategory').textContent = `Especialidad: ${activeTechUser.category}`;
             document.getElementById('techProfileId').textContent = activeTechUser.id;
-            document.getElementById('tech-rating-display').textContent = activeTechUser.rating;
+            document.getElementById('tech-rating-display').textContent = activeTechUser.rating || "5.0 ⭐";
 
             const techOrders = myOrders.filter(o => o.techId === activeTechUser.id || o.techName === activeTechUser.name);
             const completedOrders = techOrders.filter(o => o.status.includes('Completado') || o.status.includes('Aceptado'));
@@ -593,16 +585,26 @@
             });
         }
 
+        // AQUÍ SE CONTROLA QUE NO APAREZCAN TÉCNICOS SI NO HAY REGISTRADOS
         function renderTechniciansOnMap() {
             if (!map) return;
 
-            technicians.forEach(tech => {
-                if (clientMapMarkers[tech.id]) {
-                    map.removeLayer(clientMapMarkers[tech.id]);
-                }
+            // Limpiamos los marcadores existentes en el mapa antes de evaluar
+            Object.keys(clientMapMarkers).forEach(techId => {
+                map.removeLayer(clientMapMarkers[techId]);
+                delete clientMapMarkers[techId];
+            });
 
-                clientMapMarkers[tech.id] = L.marker([tech.lat, tech.lng]).addTo(map)
-                    .bindPopup(`<b>${tech.photo} ${tech.name}</b><br>${tech.category}<br><span class="text-xs text-green-600 font-bold">📍 GPS en Vivo</span>`);
+            // Si no hay técnicos, salimos inmediatamente para dejar el mapa sin marcadores de técnicos
+            if (!technicians || technicians.length === 0) {
+                return;
+            }
+
+            technicians.forEach(tech => {
+                if (tech.lat && tech.lng) {
+                    clientMapMarkers[tech.id] = L.marker([tech.lat, tech.lng]).addTo(map)
+                        .bindPopup(`<b>${tech.photo || '👷‍♂️'} ${tech.name}</b><br>${tech.category}<br><span class="text-xs text-green-600 font-bold">📍 GPS en Vivo</span>`);
+                }
             });
         }
 
@@ -614,7 +616,7 @@
                 maxZoom: 19
             }).addTo(map);
 
-            setUserMarker(userLat, userLng, "📍 Tu Ubicación Real");
+            getUserLocation();
             renderTechniciansOnMap();
         }
 
@@ -625,12 +627,18 @@
 
         function getUserLocation() {
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition((pos) => {
-                    userLat = pos.coords.latitude;
-                    userLng = pos.coords.longitude;
-                    setUserMarker(userLat, userLng, "📍 Ubicación Detectada");
-                    if (map) map.setView([userLat, userLng], 14);
-                });
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        userLat = pos.coords.latitude;
+                        userLng = pos.coords.longitude;
+                        setUserMarker(userLat, userLng, "📍 Tu Ubicación Detectada");
+                        if (map) map.setView([userLat, userLng], 14);
+                    },
+                    (error) => {
+                        console.warn("Permiso de GPS denegado o error de lectura:", error);
+                    },
+                    { enableHighAccuracy: true }
+                );
             }
         }
 
@@ -660,7 +668,7 @@
             const techSelect = document.getElementById('selectedTech');
 
             techSelect.innerHTML = filteredTechs.length > 0 
-                ? filteredTechs.map(t => `<option value="${t.id}">${t.photo} ${t.name} (${t.rating})</option>`).join('')
+                ? filteredTechs.map(t => `<option value="${t.id}">${t.photo || '👷‍♂️'} ${t.name} (${t.rating || '5.0 ⭐'})</option>`).join('')
                 : `<option value="">No hay técnicos en esta área</option>`;
 
             calculateCost();
@@ -694,20 +702,17 @@
             const zoneSelect = document.getElementById('locationZone');
             const selectedOption = zoneSelect.options[zoneSelect.selectedIndex];
 
-            const clientLat = userLat;
-            const clientLng = userLng;
-
             const taskSelect = document.getElementById('serviceTask');
             const selectedTaskName = taskSelect.options[taskSelect.selectedIndex].text.split(' ($')[0];
 
             const orderId = Date.now().toString().slice(-4);
             const newOrder = {
                 id: orderId,
-                clientId: myClientId, // ID único del cliente que realiza el pedido
+                clientId: myClientId,
                 client: document.getElementById('clientName').value,
                 zone: selectedOption.getAttribute('data-name'),
-                clientLat: clientLat,
-                clientLng: clientLng,
+                clientLat: userLat,
+                clientLng: userLng,
                 category: document.getElementById('serviceCategory').value,
                 task: selectedTaskName,
                 techId: assignedTech.id,
@@ -736,7 +741,6 @@
             const jobsList = document.getElementById('jobsList');
             if(!badge || !jobsList) return;
 
-            // Filtrar unicamente los pedidos asociados al clientId de esta sesión
             const clientOnlyOrders = myOrders.filter(o => o.clientId === myClientId);
 
             if (clientOnlyOrders.length > 0) {
