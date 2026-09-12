@@ -80,7 +80,7 @@
                         <p class="text-xs text-gray-500">Técnicos calificados conectados en tiempo real</p>
                     </div>
                     <button onclick="getUserLocation()" class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-blue-200 transition">
-                        🎯 Mi Ubicación
+                        🎯 Mi Ubicación Real
                     </button>
                 </div>
                 <div id="map" class="map-container"></div>
@@ -98,10 +98,10 @@
                         <div>
                             <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Zona / Sector</label>
                             <select id="locationZone" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                                <option value="0" data-name="Panamá Centro" data-lat="8.9824" data-lng="-79.5199">Panamá Centro (Sin recargo)</option>
-                                <option value="5" data-name="San Miguelito" data-lat="9.0333" data-lng="-79.5000">San Miguelito (+$5.00 transporte)</option>
-                                <option value="10" data-name="Panamá Oeste" data-lat="8.9833" data-lng="-79.6500">Panamá Oeste / Arraiján (+$10.00 transporte)</option>
-                                <option value="8" data-name="Panamá Este" data-lat="9.0833" data-lng="-79.3833">Panamá Este / Tocumen (+$8.00 transporte)</option>
+                                <option value="0" data-name="Panamá Centro">Panamá Centro (Sin recargo)</option>
+                                <option value="5" data-name="San Miguelito">San Miguelito (+$5.00 transporte)</option>
+                                <option value="10" data-name="Panamá Oeste">Panamá Oeste / Arraiján (+$10.00 transporte)</option>
+                                <option value="8" data-name="Panamá Este">Panamá Este / Tocumen (+$8.00 transporte)</option>
                             </select>
                         </div>
                     </div>
@@ -304,7 +304,6 @@
             appId: "1:21927015888:web:7a989cb5ef974dcc3235d5"
         };
 
-        // Inicializar Firebase
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
@@ -332,10 +331,12 @@
             ]
         };
 
+        let userLat = 8.9824, userLng = -79.5199; // Coordenadas iniciales/detectadas
+
         let initialTechnicians = [
-            { id: "TECH-001", pin: "1234", name: "Roberto Gómez", category: "Plomería", rating: "4.9 ⭐", photo: "👨‍🔧", lat: 8.9920, lng: -79.5180 },
-            { id: "TECH-002", pin: "1234", name: "Carlos Rodríguez", category: "Electricidad", rating: "5.0 ⭐", photo: "🧑‍🔧", lat: 8.9800, lng: -79.5250 },
-            { id: "TECH-003", pin: "1234", name: "Javier López", category: "Aire Acondicionado", rating: "4.8 ⭐", photo: "👨‍🏭", lat: 8.9700, lng: -79.5050 }
+            { id: "TECH-001", pin: "1234", name: "Roberto Gómez", category: "Plomería", rating: "4.9 ⭐", photo: "👨‍🔧", lat: 8.9824, lng: -79.5199 },
+            { id: "TECH-002", pin: "1234", name: "Carlos Rodríguez", category: "Electricidad", rating: "5.0 ⭐", photo: "🧑‍🔧", lat: 8.9824, lng: -79.5199 },
+            { id: "TECH-003", pin: "1234", name: "Javier López", category: "Aire Acondicionado", rating: "4.8 ⭐", photo: "👨‍🏭", lat: 8.9824, lng: -79.5199 }
         ];
 
         let technicians = [...initialTechnicians];
@@ -344,8 +345,16 @@
         let map, userMarker;
         let techMap, techMapMarkers = [];
         let clientMapMarkers = {};
-        let userLat = 8.9824, userLng = -79.5199;
         let watchPositionId = null;
+
+        // Intentar obtener la ubicación real inmediatamente al cargar
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((pos) => {
+                userLat = pos.coords.latitude;
+                userLng = pos.coords.longitude;
+                initialTechnicians.forEach(t => { t.lat = userLat; t.lng = userLng; });
+            });
+        }
 
         // ESCUCHAR TÉCNICOS EN TIEMPO REAL DESDE FIREBASE
         db.ref('technicians').on('value', (snapshot) => {
@@ -360,8 +369,6 @@
             updateServiceTasks();
             if (map) renderTechniciansOnMap();
             if (techMap && activeTechUser) renderTechPortalMap();
-        }, (error) => {
-            console.error("Error al leer técnicos:", error);
         });
 
         // ESCUCHAR PEDIDOS EN TIEMPO REAL DESDE FIREBASE
@@ -370,8 +377,6 @@
             myOrders = data ? Object.values(data) : [];
             updateOrdersUI();
             if (activeTechUser) renderIndividualTechPortal();
-        }, (error) => {
-            console.error("Error al leer pedidos:", error);
         });
 
         function showSection(sectionName) {
@@ -441,6 +446,8 @@
                 (pos) => {
                     const newLat = pos.coords.latitude;
                     const newLng = pos.coords.longitude;
+                    userLat = newLat;
+                    userLng = newLng;
 
                     if (activeTechUser) {
                         activeTechUser.lat = newLat;
@@ -449,7 +456,7 @@
                         db.ref('technicians/' + activeTechUser.id).update({
                             lat: newLat,
                             lng: newLng
-                        }).catch(err => console.error("Error al actualizar GPS:", err));
+                        }).catch(err => console.error("Error GPS:", err));
                     }
 
                     const gpsStatus = document.getElementById('tech-gps-status');
@@ -476,7 +483,7 @@
 
         function initTechMap() {
             if (!techMap) {
-                techMap = L.map('techMap').setView([userLat, userLng], 12);
+                techMap = L.map('techMap').setView([userLat, userLng], 13);
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(techMap);
             }
             setTimeout(() => techMap.invalidateSize(), 200);
@@ -558,13 +565,11 @@
         }
 
         function acceptJob(orderId) {
-            db.ref('orders/' + orderId).update({ status: "Aceptado 🚗 (En Camino)" })
-              .catch(err => alert("Error en Firebase: " + err.message));
+            db.ref('orders/' + orderId).update({ status: "Aceptado 🚗 (En Camino)" });
         }
 
         function completeJob(orderId) {
-            db.ref('orders/' + orderId).update({ status: "Servicio Completado 🏁" })
-              .catch(err => alert("Error en Firebase: " + err.message));
+            db.ref('orders/' + orderId).update({ status: "Servicio Completado 🏁" });
         }
 
         function renderTechniciansOnMap() {
@@ -584,7 +589,7 @@
             map = L.map('map').setView([userLat, userLng], 13);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-            setUserMarker(userLat, userLng, "📍 Tu Ubicación");
+            setUserMarker(userLat, userLng, "📍 Tu Ubicación Real");
             renderTechniciansOnMap();
         }
 
@@ -599,6 +604,7 @@
                     userLat = pos.coords.latitude;
                     userLng = pos.coords.longitude;
                     setUserMarker(userLat, userLng, "📍 Ubicación Detectada");
+                    if (map) map.setView([userLat, userLng], 14);
                 });
             }
         }
@@ -649,6 +655,7 @@
 
         document.getElementById('locationZone').addEventListener('change', calculateCost);
 
+        // CREAR PEDIDO UTILIZANDO SIEMPRE LA UBICACIÓN ACTUAL DEL DISPOSITIVO
         document.getElementById('orderForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
@@ -663,8 +670,9 @@
             const zoneSelect = document.getElementById('locationZone');
             const selectedOption = zoneSelect.options[zoneSelect.selectedIndex];
 
-            const clientLat = parseFloat(selectedOption.getAttribute('data-lat')) || userLat;
-            const clientLng = parseFloat(selectedOption.getAttribute('data-lng')) || userLng;
+            // COORDENADAS REALES DEL CLIENTE (SIN ZONAS POR DEFECTO)
+            const clientLat = userLat;
+            const clientLng = userLng;
 
             const taskSelect = document.getElementById('serviceTask');
             const selectedTaskName = taskSelect.options[taskSelect.selectedIndex].text.split(' ($')[0];
@@ -686,16 +694,15 @@
                 date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             };
 
-            // GUARDAR EN FIREBASE CON MANEJO DE ERRORES
             db.ref('orders/' + orderId).set(newOrder)
                 .then(() => {
-                    alert(`¡Solicitud #${orderId} enviada con éxito a ${assignedTech.name}!`);
+                    alert(`¡Solicitud #${orderId} enviada con éxito en tu ubicación actual!`);
                     switchTab('jobs');
                     this.reset();
                     updateServiceTasks();
                 })
                 .catch((error) => {
-                    alert("Error al enviar pedido a Firebase: " + error.message + "\n\nAsegúrate de haber publicado las Reglas de seguridad en '.read: true' y '.write: true'.");
+                    alert("Error en Firebase: " + error.message);
                 });
         });
 
@@ -755,6 +762,7 @@
         });
 
         window.onload = () => {
+            getUserLocation();
             updateServiceTasks();
         };
     </script>
