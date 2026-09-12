@@ -3,159 +3,243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Handyman - Servicios Técnicos Profesionales</title>
+    <title>Handyman App - Solicita un Técnico</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col">
 
-    <!-- Navegación -->
-    <nav class="bg-blue-900 text-white p-4 flex justify-between items-center shadow-lg sticky top-0 z-50">
-        <h1 class="text-xl font-bold">🛠️ Handyman App</h1>
-        <a href="#cotizacion" class="bg-amber-500 hover:bg-amber-600 text-gray-900 px-4 py-2 rounded-lg font-semibold transition">Cotizar Ahora</a>
+    <!-- Navegación Principal estilo App -->
+    <nav class="bg-blue-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold flex items-center gap-2">⚡ Handyman Express</h1>
+            
+            <!-- Botones de Pestañas (Navegación) -->
+            <div class="flex gap-2 text-sm font-semibold">
+                <button onclick="switchTab('request')" id="btn-request" class="px-3 py-2 rounded-lg bg-blue-700 text-white transition">Pedir Servicio</button>
+                <button onclick="switchTab('techs')" id="btn-techs" class="px-3 py-2 rounded-lg hover:bg-blue-800 text-blue-200 transition">Técnicos</button>
+                <button onclick="switchTab('jobs')" id="btn-jobs" class="px-3 py-2 rounded-lg hover:bg-blue-800 text-blue-200 transition flex items-center gap-1">
+                    Mis Pedidos <span id="job-badge" class="bg-amber-500 text-gray-900 text-xs px-2 py-0.5 rounded-full font-bold hidden">0</span>
+                </button>
+            </div>
+        </div>
     </nav>
 
-    <!-- Hero / Encabezado -->
-    <section class="text-center py-16 px-4 bg-blue-800 text-white">
-        <h2 class="text-4xl font-extrabold mb-4">Soluciones Rápidas de Plomería y Electricidad</h2>
-        <p class="text-lg max-w-2xl mx-auto mb-6">Trabajos garantizados para tu hogar o negocio. Mantenimiento preventivo y emergencias.</p>
-        <a href="#cotizacion" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl font-bold text-lg inline-flex items-center gap-2 shadow-md transition">
-            📋 Calcular Cotización
-        </a>
-    </section>
+    <!-- CONTENEDOR PRINCIPAL -->
+    <main class="max-w-4xl mx-auto p-4 flex-grow w-full">
 
-    <!-- Catálogo de Servicios -->
-    <section class="max-w-5xl mx-auto py-12 px-4">
-        <h3 class="text-2xl font-bold text-center mb-8">Nuestros Servicios</h3>
-        <div class="grid md:grid-cols-2 gap-6">
-            
-            <!-- Plomería -->
-            <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
-                <h4 class="text-xl font-bold text-blue-900 mb-2">🚰 Servicios de Plomería</h4>
-                <ul class="list-disc list-inside text-gray-600 space-y-2">
-                    <li>Reparación de fugas y filtraciones</li>
-                    <li>Instalación de grifería y sanitarios</li>
-                    <li>Destape de tuberías y drenajes</li>
-                    <li>Mantenimiento de calentadores</li>
-                </ul>
+        <!-- 1. PESTAÑA: SOLICITAR SERVICIO (Estilo Uber) -->
+        <section id="tab-request" class="space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-200">
+                <h2 class="text-2xl font-bold text-blue-900 mb-1">🚗 Solicita tu Técnico en Tiempo Real</h2>
+                <p class="text-gray-500 text-sm mb-6">Ingresa tu ubicación y detalles para cotizar e invocar el servicio.</p>
+
+                <form id="orderForm" class="space-y-4">
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Nombre del Cliente</label>
+                            <input type="text" id="clientName" required placeholder="Ej. Carlos Mendoza" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Ubicación / Sector</label>
+                            <select id="locationZone" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                <option value="0" data-name="Centro">Panamá Centro (Sin recargo)</option>
+                                <option value="5" data-name="San Miguelito">San Miguelito (+$5.00 transporte)</option>
+                                <option value="10" data-name="Panamá Oeste">Panamá Oeste / Arraiján (+$10.00 transporte)</option>
+                                <option value="8" data-name="Panamá Este">Panamá Este / Tocumen (+$8.00 transporte)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Especialidad Requerida</label>
+                            <select id="serviceCategory" onchange="filterTechsByCategory()" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                <option value="Plomería">🚰 Plomería ($25 tarifa base)</option>
+                                <option value="Electricidad">⚡ Electricidad ($30 tarifa base)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Seleccionar Técnico Disponible</label>
+                            <select id="selectedTech" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                <!-- Se llena dinámicamente con JS -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Descripción de la Avería o Trabajo</label>
+                        <textarea id="jobDetail" rows="2" placeholder="Ej. Tengo una fuga en la llave del fregadero y salta el breaker..." class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none" required></textarea>
+                    </div>
+
+                    <!-- Panel de Tarifa Estimada -->
+                    <div class="bg-blue-50 p-4 rounded-xl border border-blue-200 flex justify-between items-center">
+                        <div>
+                            <span class="text-xs text-gray-500 block uppercase font-bold">Tarifa Total Estimada</span>
+                            <span class="text-xs text-gray-400">Incluye servicio + costo de movilización</span>
+                        </div>
+                        <span id="displayTotal" class="text-3xl font-black text-blue-900">$25.00</span>
+                    </div>
+
+                    <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-gray-900 py-3 rounded-xl font-bold text-lg shadow-lg transition transform active:scale-95">
+                        🚀 Solicitar Pedido Ahora
+                    </button>
+                </form>
             </div>
+        </section>
 
-            <!-- Electricidad -->
-            <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
-                <h4 class="text-xl font-bold text-blue-900 mb-2">⚡ Servicios Eléctricos</h4>
-                <ul class="list-disc list-inside text-gray-600 space-y-2">
-                    <li>Instalación de lámparas y tomacorrientes</li>
-                    <li>Reparación de cortocircuitos</li>
-                    <li>Revisión de tableros eléctricos</li>
-                    <li>Cableado residencial y comercial</li>
-                </ul>
+        <!-- 2. PESTAÑA: DIRECTORIO DE TÉCNICOS -->
+        <section id="tab-techs" class="hidden space-y-4">
+            <h2 class="text-xl font-bold text-blue-900">👥 Nuestros Técnicos Disponibles</h2>
+            <div id="techsGrid" class="grid md:grid-cols-2 gap-4">
+                <!-- Se genera dinámicamente desde el Array de JS -->
             </div>
+        </section>
 
-        </div>
-    </section>
-
-    <!-- Formulario de Cotización Interactivo -->
-    <section id="cotizacion" class="max-w-3xl mx-auto py-12 px-4">
-        <div class="bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
-            <h3 class="text-2xl font-bold text-blue-900 mb-2 text-center">Calcula tu Cotización Básica</h3>
-            <p class="text-center text-gray-500 mb-6">Selecciona los datos de tu trabajo para estimar el costo.</p>
-
-            <form id="quoteForm" class="space-y-4">
-                <!-- Nombre del cliente -->
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Tu Nombre</label>
-                    <input type="text" id="clientName" required placeholder="Ej. María López" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        <!-- 3. PESTAÑA: TRABAJOS Y PEDIDOS SOLICITADOS -->
+        <section id="tab-jobs" class="hidden space-y-4">
+            <h2 class="text-xl font-bold text-blue-900">📋 Historial de Pedidos Activos</h2>
+            <div id="jobsList" class="space-y-3">
+                <div class="bg-white p-8 text-center rounded-2xl border border-gray-200 text-gray-400">
+                    Aún no has realizado ninguna solicitud de servicio.
                 </div>
+            </div>
+        </section>
 
-                <!-- Selección de servicio -->
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Tipo de Servicio</label>
-                    <select id="serviceType" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        <option value="25" data-category="Plomería">Plomería - Fuga Básica / Grifería ($25 estimación inicial)</option>
-                        <option value="35" data-category="Plomería">Plomería - Destape / Cañería ($35 estimación inicial)</option>
-                        <option value="20" data-category="Electricidad">Electricidad - Instalación de Lámpara/Socket ($20 estimación inicial)</option>
-                        <option value="40" data-category="Electricidad">Electricidad - Revisión de Tablero / Corto ($40 estimación inicial)</option>
-                    </select>
-                </div>
+    </main>
 
-                <!-- Opción de Emergencia -->
-                <div class="flex items-center gap-3 py-2">
-                    <input type="checkbox" id="isEmergency" class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500">
-                    <label for="isEmergency" class="text-sm font-medium text-gray-700">Atención Prioritaria / Emergencia (+ $15)</label>
-                </div>
-
-                <!-- Descripción del problema -->
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Detalle del Trabajo</label>
-                    <textarea id="description" rows="3" placeholder="Describe brevemente lo que necesitas reparar o instalar..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
-                </div>
-
-                <!-- Visor de Precio Estimado -->
-                <div class="bg-blue-50 p-4 rounded-xl text-center border border-blue-200 mt-4">
-                    <span class="text-sm text-gray-600 block">Costo Estimado Aproximado:</span>
-                    <span id="totalPrice" class="text-3xl font-extrabold text-blue-900">$25.00</span>
-                </div>
-
-                <!-- Botón de envío a WhatsApp -->
-                <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-bold text-lg shadow-md transition flex justify-center items-center gap-2">
-                    💬 Enviar Cotización por WhatsApp
-                </button>
-            </form>
-        </div>
-    </section>
-
-    <footer class="bg-gray-900 text-gray-400 text-center py-6 mt-12">
-        <p>&copy; 2026 Handyman App - Proyecto de Portafolio</p>
-    </footer>
-
-    <!-- LÓGICA EN JAVASCRIPT -->
+    <!-- LÓGICA DE LA APLICACIÓN (JavaScript) -->
     <script>
-        // Referencias a los elementos del formulario
-        const quoteForm = document.getElementById('quoteForm');
-        const serviceType = document.getElementById('serviceType');
-        const isEmergency = document.getElementById('isEmergency');
-        const totalPrice = document.getElementById('totalPrice');
+        // BASE DE DATOS DE TÉCNICOS (Simulación Backend)
+        const technicians = [
+            { id: 1, name: "Roberto Gómez", category: "Plomería", rating: "4.9 ⭐", jobsDone: 142, status: "Disponible", photo: "👨‍🔧" },
+            { id: 2, name: "Carlos Rodríguez", category: "Electricidad", rating: "5.0 ⭐", jobsDone: 98, status: "Disponible", photo: "🧑‍🔧" },
+            { id: 3, name: "Javier López", category: "Plomería", rating: "4.8 ⭐", jobsDone: 76, status: "En Ruta", photo: "👨‍🏭" },
+            { id: 4, name: "Miguel Ángel", category: "Electricidad", rating: "4.9 ⭐", jobsDone: 115, status: "Disponible", photo: "👷‍♂️" }
+        ];
 
-        // Número de teléfono de destino (reemplazar con el número real de WhatsApp con código de país)
-        const PHONE_NUMBER = "50760000000"; // Ejemplo para Panamá (+507)
+        // ARREGLO PARA ALMACENAR PEDIDOS
+        let myOrders = [];
 
-        // Función para calcular y actualizar el precio en pantalla
-        function calculateTotal() {
-            let basePrice = parseFloat(serviceType.value);
-            let emergencyFee = isEmergency.checked ? 15 : 0;
-            let total = basePrice + emergencyFee;
+        // REFERENCIAS DOM
+        const locationZone = document.getElementById('locationZone');
+        const serviceCategory = document.getElementById('serviceCategory');
+        const selectedTech = document.getElementById('selectedTech');
+        const displayTotal = document.getElementById('displayTotal');
+        const orderForm = document.getElementById('orderForm');
 
-            totalPrice.textContent = `$${total.toFixed(2)}`;
+        // Pestañas (Navegación SPA)
+        function switchTab(tabName) {
+            ['request', 'techs', 'jobs'].forEach(tab => {
+                document.getElementById(`tab-${tab}`).classList.add('hidden');
+                document.getElementById(`btn-${tab}`).classList.remove('bg-blue-700', 'text-white');
+                document.getElementById(`btn-${tab}`).classList.add('text-blue-200');
+            });
+
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+            document.getElementById(`btn-${tabName}`).classList.add('bg-blue-700', 'text-white');
+        }
+
+        // Renderizar directorio de técnicos
+        function renderTechs() {
+            const container = document.getElementById('techsGrid');
+            container.innerHTML = technicians.map(tech => `
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200 flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <span class="text-4xl bg-blue-50 p-3 rounded-2xl">${tech.photo}</span>
+                        <div>
+                            <h3 class="font-bold text-gray-900">${tech.name}</h3>
+                            <p class="text-xs text-gray-500">${tech.category} • ${tech.jobsDone} trabajos</p>
+                            <span class="text-xs font-bold ${tech.status === 'Disponible' ? 'text-green-600' : 'text-amber-600'}">${tech.status}</span>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-sm font-bold text-amber-500">${tech.rating}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Filtrar selector de técnicos según categoría elegida
+        function filterTechsByCategory() {
+            const cat = serviceCategory.value;
+            const filtered = technicians.filter(t => t.category === cat);
+            selectedTech.innerHTML = filtered.map(t => `<option value="${t.name}">${t.name} (${t.rating})</option>`).join('');
+            calculateCost();
+        }
+
+        // Calcular Tarifa
+        function calculateCost() {
+            const baseCost = serviceCategory.value === 'Plomería' ? 25 : 30;
+            const travelCost = parseFloat(locationZone.value);
+            const total = baseCost + travelCost;
+            displayTotal.textContent = `$${total.toFixed(2)}`;
             return total;
         }
 
-        // Detectar cambios en las opciones para actualizar el precio en tiempo real
-        serviceType.addEventListener('change', calculateTotal);
-        isEmergency.addEventListener('change', calculateTotal);
+        // Listeners de cálculo
+        locationZone.addEventListener('change', calculateCost);
+        serviceCategory.addEventListener('change', calculateCost);
 
-        // Evento al enviar el formulario
-        quoteForm.addEventListener('submit', function(e) {
+        // CREAR UN PEDIDO 
+        orderForm.addEventListener('submit', function(e) {
             e.preventDefault();
 
-            const clientName = document.getElementById('clientName').value.trim();
-            const selectedOption = serviceType.options[serviceType.selectedIndex];
-            const serviceText = selectedOption.text;
-            const description = document.getElementById('description').value.trim();
-            const emergencyText = isEmergency.checked ? 'SÍ (Prioritario)' : 'No';
-            const finalTotal = calculateTotal();
+            const newOrder = {
+                id: Date.now().toString().slice(-4),
+                client: document.getElementById('clientName').value,
+                zone: locationZone.options[locationZone.selectedIndex].getAttribute('data-name'),
+                category: serviceCategory.value,
+                tech: selectedTech.value,
+                detail: document.getElementById('jobDetail').value,
+                cost: calculateCost(),
+                status: "Asignado - En camino 🚗",
+                date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            };
 
-            // Construcción del mensaje formateado para WhatsApp
-            const message = `*NUEVA SOLICITUD DE COTIZACIÓN - HANDYMAN*%0A%0A` +
-                `👤 *Cliente:* ${encodeURIComponent(clientName)}%0A` +
-                `🛠️ *Servicio:* ${encodeURIComponent(serviceText)}%0A` +
-                `🚨 *Atención de Emergencia:* ${emergencyText}%0A` +
-                `📝 *Detalle:* ${encodeURIComponent(description || 'Sin detalles adicionales')}%0A` +
-                `💰 *Estimación Inicial:* $${finalTotal.toFixed(2)}`;
-
-            // Crear enlace de WhatsApp y abrirlo en una nueva pestaña
-            const whatsappUrl = `https://wa.me/${PHONE_NUMBER}?text=${message}`;
-            window.open(whatsappUrl, '_blank');
+            myOrders.unshift(newOrder);
+            updateOrdersUI();
+            
+            // Redirigir a la pestaña de pedidos
+            switchTab('jobs');
+            orderForm.reset();
+            calculateCost();
         });
+
+        // Actualizar UI de Pedidos
+        function updateOrdersUI() {
+            const badge = document.getElementById('job-badge');
+            const jobsList = document.getElementById('jobsList');
+
+            if (myOrders.length > 0) {
+                badge.textContent = myOrders.length;
+                badge.classList.remove('hidden');
+
+                jobsList.innerHTML = myOrders.map(order => `
+                    <div class="bg-white p-5 rounded-2xl shadow-md border-l-4 border-amber-500 flex justify-between items-center">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-xs font-bold bg-blue-100 text-blue-900 px-2 py-0.5 rounded">Pedido #${order.id}</span>
+                                <span class="text-xs text-gray-400">${order.date}</span>
+                            </div>
+                            <h4 class="font-bold text-gray-900">${order.category} con ${order.tech}</h4>
+                            <p class="text-xs text-gray-600">📍 ${order.zone} • ${order.detail}</p>
+                            <span class="inline-block mt-2 text-xs font-bold text-green-600 bg-green-50 px-2.5 py-1 rounded-full">${order.status}</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xl font-extrabold text-blue-900 block">$${order.cost.toFixed(2)}</span>
+                            <a href="https://wa.me/50760000000?text=Hola,%20seguimiento%20al%20pedido%20%23${order.id}" target="_blank" class="inline-block mt-2 text-xs bg-green-500 text-white font-bold px-3 py-1.5 rounded-lg hover:bg-green-600 transition">
+                                💬 Contactar
+                            </a>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Inicialización
+        renderTechs();
+        filterTechsByCategory();
     </script>
 </body>
 </html>
