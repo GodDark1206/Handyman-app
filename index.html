@@ -309,7 +309,7 @@
         }
         const db = firebase.database();
 
-        // SERVIDOR DE MAPAS CARTO (Evita error 403 de OSM)
+        // SERVIDOR DE MAPAS CARTO
         const MAP_TILE_URL = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
         const MAP_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
 
@@ -494,16 +494,20 @@
             setTimeout(() => techMap.invalidateSize(), 200);
         }
 
+        // FUNCIÓN MODIFICADA: Limpia las marcas antiguas y excluye pedidos completados
         function renderTechPortalMap() {
             if (!techMap || !activeTechUser) return;
 
+            // Limpiar todas las marcas previas
             techMapMarkers.forEach(m => techMap.removeLayer(m));
             techMapMarkers = [];
 
+            // Marca del técnico
             const techMarker = L.marker([activeTechUser.lat, activeTechUser.lng]).addTo(techMap)
                 .bindPopup(`<b>${activeTechUser.photo} Tu Posición</b><br><span class="text-xs text-green-600 font-bold">Transmitiendo GPS</span>`);
             techMapMarkers.push(techMarker);
 
+            // Filtrar SOLO pedidos activos (Pendiente o Aceptado)
             const activeTechOrders = myOrders.filter(o => 
                 (o.techId === activeTechUser.id || o.techName === activeTechUser.name) && 
                 !o.status.includes('Completado')
@@ -576,11 +580,14 @@
             db.ref('orders/' + orderId).update({ status: "Aceptado 🚗 (En Camino)" });
         }
 
+        // FUNCIÓN MODIFICADA: Elimina explícitamente las coordenadas del cliente
         function completeJob(orderId) {
             db.ref('orders/' + orderId).update({
                 status: "Servicio Completado 🏁",
                 clientLat: null,
                 clientLng: null
+            }).then(() => {
+                if (activeTechUser) renderTechPortalMap();
             });
         }
 
