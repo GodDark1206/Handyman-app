@@ -6,10 +6,12 @@
     <title>Handyman Express - Plataforma Multi-Técnico</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Leaflet CSS -->
+    <!-- Leaflet CSS (100% Gratuito y sin tarjeta) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- SheetJS para exportar a Excel automáticamente -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
-        .map-container { height: 320px; width: 100%; border-radius: 1rem; z-index: 1; }
+        .map-container { height: 320px; width: 100%; border-radius: 1rem; z-index: 1; background-color: #f8fafc !important; }
         html { scroll-behavior: smooth; }
     </style>
 </head>
@@ -30,8 +32,8 @@
                 <button onclick="openTechAuthModal()" class="bg-blue-800/80 border border-blue-600 text-amber-300 hover:bg-blue-700 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-1.5">
                     🔒 Portal Técnico
                 </button>
-                <button onclick="openAdminAuthModal()" class="bg-gray-800 border border-gray-700 text-gray-300 hover:bg-gray-700 px-2.5 py-2 rounded-xl text-xs font-bold transition" title="Panel Admin">
-                    ⚙️ Admin
+                <button onclick="openAdminAuthModal()" class="bg-gray-800 border border-gray-700 text-gray-300 hover:bg-gray-700 px-2.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition" title="Panel Admin">
+                    ⚙ Admin
                 </button>
             </div>
         </div>
@@ -113,7 +115,7 @@
                         <div>
                             <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Especialidad Requerida</label>
                             <select id="serviceCategory" onchange="updateServiceTasks()" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                                <option value="Plomería">🚰 Plomería</option>
+                                <option value="Plomería">💧 Plomería</option>
                                 <option value="Electricidad">⚡ Electricidad</option>
                                 <option value="Aire Acondicionado">❄️ Aire Acondicionado</option>
                                 <option value="Techos y Tejados">🏠 Techos y Tejados</option>
@@ -235,7 +237,12 @@
         </div>
 
         <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-200 space-y-4">
-            <h3 class="font-bold text-gray-900 text-lg">Solicitudes Pendientes de Revisión</h3>
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-gray-100 pb-4">
+                <h3 class="font-bold text-gray-900 text-lg">Solicitudes Pendientes de Revisión</h3>
+                <button onclick="exportOrdersToExcel()" class="bg-green-600 hover:bg-green-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-md transition">
+                    📊 Descargar Reporte en Excel
+                </button>
+            </div>
             <div id="adminPendingList" class="space-y-3">
                 <div class="p-6 text-center text-gray-400 bg-gray-50 rounded-xl">No hay solicitudes pendientes.</div>
             </div>
@@ -275,7 +282,7 @@
         </div>
     </div>
 
-    <!-- MODAL CONTACTO PARA NUEVO TÉCNICO (MODIFICADO) -->
+    <!-- MODAL CONTACTO PARA NUEVO TÉCNICO -->
     <div id="joinModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
         <div class="bg-white p-6 rounded-2xl max-w-md w-full shadow-2xl space-y-4">
             <div class="flex justify-between items-center">
@@ -292,7 +299,7 @@
                 <div>
                     <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Tu Especialidad</label>
                     <select id="joinCategory" class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="Plomería">🚰 Plomería</option>
+                        <option value="Plomería">💧 Plomería</option>
                         <option value="Electricidad">⚡ Electricidad</option>
                         <option value="Aire Acondicionado">❄️ Aire Acondicionado</option>
                         <option value="Techos y Tejados">🏠 Techos y Tejados</option>
@@ -304,7 +311,7 @@
                         💬 Enviar Solicitud por WhatsApp
                     </button>
                     <button onclick="contactViaEmail()" class="w-full bg-blue-900 hover:bg-blue-800 text-white py-3 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2">
-                        ✉️ Enviar Solicitud por Correo
+                        ✏️ Enviar Solicitud por Correo
                     </button>
                 </div>
             </div>
@@ -363,8 +370,9 @@
             localStorage.setItem('handyman_client_id', myClientId);
         }
 
-        const MAP_TILE_URL = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
-        const MAP_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
+        // MAPA BASE OSM HUMANITARIO (100% Gratuito, sin API Key y sin bloqueos de tarjeta)
+        const MAP_TILE_URL = 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png';
+        const MAP_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles courtesy of <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a>';
 
         const serviceCatalog = {
             "Plomería": [
@@ -394,8 +402,9 @@
         let activeTechUser = null;
         let myOrders = [];
         let map, userMarker;
-        let techMap, techMapMarkers = [];
-        let clientMapMarkers = {};
+        let techMap;
+        let clientLayerGroup = L.layerGroup();
+        let techLayerGroup = L.layerGroup();
         let watchPositionId = null;
 
         db.ref('technicians').on('value', (snapshot) => {
@@ -423,6 +432,33 @@
             updateOrdersUI();
             if (activeTechUser) renderIndividualTechPortal();
         });
+
+        function exportOrdersToExcel() {
+            if (!myOrders || myOrders.length === 0) {
+                alert("No hay registros de pedidos disponibles para exportar.");
+                return;
+            }
+
+            const datosParaExcel = myOrders.map(order => ({
+                "ID Pedido": order.id || "N/A",
+                "Cliente": order.client || "Sin nombre",
+                "Zona / Sector": order.zone || "N/A",
+                "Categoría": order.category || "N/A",
+                "Servicio": order.task || "N/A",
+                "Técnico Asignado": order.techName || "Sin asignar",
+                "Costo ($)": order.cost || 0,
+                "Estado": order.status || "Pendiente",
+                "Hora / Fecha": order.date || "N/A",
+                "Notas": order.detail || ""
+            }));
+
+            const hoja = XLSX.utils.json_to_sheet(datosParaExcel);
+            const libro = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(libro, hoja, "Reporte de Servicios");
+
+            const fechaHoy = new Date().toISOString().slice(0, 10);
+            XLSX.writeFile(libro, `Reporte_Handyman_Express_${fechaHoy}.xlsx`);
+        }
 
         function showSection(sectionName) {
             document.getElementById('page-landing').classList.add('hidden');
@@ -489,7 +525,7 @@
                 <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 flex justify-between items-center">
                     <div>
                         <span class="text-xs font-bold text-amber-600 bg-amber-100 px-2 py-0.5 rounded">Pendiente</span>
-                        <h4 class="font-bold text-gray-900 text-base mt-1">👷‍♂️ ${t.name}</h4>
+                        <h4 class="font-bold text-gray-900 text-base mt-1">👨‍✈️ ${t.name}</h4>
                         <p class="text-xs text-gray-600">Especialidad: <b>${t.category}</b> • ID: ${t.id}</p>
                     </div>
                     <div class="flex gap-2">
@@ -523,7 +559,7 @@
                 return;
             }
 
-            select.innerHTML = technicians.map(t => `<option value="${t.id}">${t.photo || '👷‍♂️'} ${t.name} (${t.category})</option>`).join('');
+            select.innerHTML = technicians.map(t => `<option value="${t.id}">${t.photo || '👨‍✈️'} ${t.name} (${t.category})</option>`).join('');
         }
 
         function validateTechPin() {
@@ -584,38 +620,41 @@
         function initTechMap() {
             if (!techMap) {
                 techMap = L.map('techMap').setView([userLat, userLng], 13);
-                L.tileLayer(MAP_TILE_URL, { attribution: MAP_ATTRIBUTION, subdomains: 'abcd', maxZoom: 19 }).addTo(techMap);
+                L.tileLayer(MAP_TILE_URL, { attribution: MAP_ATTRIBUTION, maxZoom: 19 }).addTo(techMap);
             }
             setTimeout(() => techMap.invalidateSize(), 200);
         }
 
         function renderTechPortalMap() {
             if (!techMap || !activeTechUser) return;
-            techMapMarkers.forEach(m => techMap.removeLayer(m));
-            techMapMarkers = [];
+            
+            techLayerGroup.clearLayers();
+            techLayerGroup.addTo(techMap);
 
-            const techMarker = L.marker([activeTechUser.lat, activeTechUser.lng]).addTo(techMap)
-                .bindPopup(`<b>${activeTechUser.photo || '👷‍♂️'} Tu Posición</b>`);
-            techMapMarkers.push(techMarker);
+            if (activeTechUser.lat && activeTechUser.lng) {
+                const techMarker = L.marker([activeTechUser.lat, activeTechUser.lng])
+                    .bindPopup(`<b>${activeTechUser.photo || '👨‍✈️'} Tu Posición</b>`);
+                techLayerGroup.addLayer(techMarker);
+                techMap.setView([activeTechUser.lat, activeTechUser.lng], 13);
+            }
 
             const activeTechOrders = myOrders.filter(o => 
                 (o.techId === activeTechUser.id || o.techName === activeTechUser.name) && 
-                !o.status.includes('Completado')
+                o.status && !o.status.includes('Completado')
             );
 
             activeTechOrders.forEach(order => {
                 if (order.clientLat && order.clientLng) {
-                    const clientMarker = L.marker([order.clientLat, order.clientLng]).addTo(techMap)
+                    const clientMarker = L.marker([order.clientLat, order.clientLng])
                         .bindPopup(`<b>👤 Cliente: ${order.client}</b><br>🛠️ ${order.task}<br><b>Estado:</b> ${order.status}`);
-                    techMapMarkers.push(clientMarker);
+                    techLayerGroup.addLayer(clientMarker);
                 }
             });
-            techMap.setView([activeTechUser.lat, activeTechUser.lng], 13);
         }
 
         function renderIndividualTechPortal() {
             if (!activeTechUser) return;
-            document.getElementById('techProfileName').textContent = `${activeTechUser.photo || '👷‍♂️'} ${activeTechUser.name}`;
+            document.getElementById('techProfileName').textContent = `${activeTechUser.photo || '👨‍✈'} ${activeTechUser.name}`;
             document.getElementById('techProfileCategory').textContent = `Especialidad: ${activeTechUser.category}`;
             document.getElementById('techProfileId').textContent = activeTechUser.id;
             document.getElementById('tech-rating-display').textContent = activeTechUser.rating || "5.0 ⭐";
@@ -640,7 +679,7 @@
                         <span class="text-xs font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded">Pedido #${job.id}</span>
                         <h4 class="text-lg font-bold text-gray-900">${job.task}</h4>
                         <p class="text-xs text-gray-600">👤 Cliente: <b>${job.client}</b> • 📍 ${job.zone}</p>
-                        <span class="inline-block mt-1 text-xs font-bold px-2 py-0.5 rounded-full ${job.status.includes('Completado') ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}">${job.status}</span>
+                        <span class="inline-block mt-1 text-xs font-bold px-2.5 py-0.5 rounded-full ${job.status.includes('Completado') ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}">${job.status}</span>
                     </div>
                     <div class="text-right">
                         <span class="text-xl font-black text-blue-900 block mb-2">$${job.cost.toFixed(2)}</span>
@@ -663,24 +702,26 @@
 
         function renderTechniciansOnMap() {
             if (!map) return;
-            Object.keys(clientMapMarkers).forEach(techId => {
-                map.removeLayer(clientMapMarkers[techId]);
-                delete clientMapMarkers[techId];
-            });
+            
+            clientLayerGroup.clearLayers();
+            clientLayerGroup.addTo(map);
 
-            if (!technicians || technicians.length === 0) return;
+            if (!technicians || technicians.length === 0) {
+                return;
+            }
 
             technicians.forEach(tech => {
                 if (tech.lat && tech.lng) {
-                    clientMapMarkers[tech.id] = L.marker([tech.lat, tech.lng]).addTo(map)
-                        .bindPopup(`<b>${tech.photo || '👷‍♂️'} ${tech.name}</b><br>${tech.category}<br><span class="text-xs text-green-600 font-bold">📍 GPS en Vivo</span>`);
+                    const techMarker = L.marker([tech.lat, tech.lng])
+                        .bindPopup(`<b>${tech.photo || '👨‍✈️'} ${tech.name}</b><br>${tech.category}<br><span class="text-xs text-green-600 font-bold">📍 GPS en Vivo</span>`);
+                    clientLayerGroup.addLayer(techMarker);
                 }
             });
         }
 
         function initMap() {
             map = L.map('map').setView([userLat, userLng], 13);
-            L.tileLayer(MAP_TILE_URL, { attribution: MAP_ATTRIBUTION, subdomains: 'abcd', maxZoom: 19 }).addTo(map);
+            L.tileLayer(MAP_TILE_URL, { attribution: MAP_ATTRIBUTION, maxZoom: 19 }).addTo(map);
             getUserLocation();
             renderTechniciansOnMap();
         }
@@ -728,7 +769,7 @@
             const techSelect = document.getElementById('selectedTech');
 
             techSelect.innerHTML = filteredTechs.length > 0 
-                ? filteredTechs.map(t => `<option value="${t.id}">${t.photo || '👷‍♂️'} ${t.name} (${t.rating || '5.0 ⭐'})</option>`).join('')
+                ? filteredTechs.map(t => `<option value="${t.id}">${t.photo || '👨‍✈'} ${t.name} (${t.rating || '5.0 ⭐'})</option>`).join('')
                 : `<option value="">No hay técnicos aprobados en esta área</option>`;
 
             calculateCost();
@@ -819,7 +860,6 @@
         function openJoinModal() { document.getElementById('joinModal').classList.remove('hidden'); }
         function closeJoinModal() { document.getElementById('joinModal').classList.add('hidden'); }
 
-        // FUNCIONES DE CONTACTO DIRECTO (WHATSAPP Y CORREO)
         function contactViaWhatsApp() {
             const name = document.getElementById('joinName').value.trim();
             const category = document.getElementById('joinCategory').value;
@@ -830,7 +870,6 @@
                 return;
             }
 
-            // Cambia el número de teléfono por el tuyo en formato internacional sin símbolos (ej: 50760000000 para Panamá)
             const tuNumeroWhatsApp = "50700000000"; 
             const mensaje = encodeURIComponent(`Hola, soy ${name} y me quiero registrar como técnico especialista en ${category} en Handyman Express. ¿Me ayudas con mi cuenta y PIN?`);
             
@@ -847,7 +886,6 @@
                 return;
             }
 
-            // Cambia este correo por el tuyo personal
             const tuCorreo = "tucorreo@example.com"; 
             const asunto = encodeURIComponent(`Solicitud de Registro - Handyman Express`);
             const cuerpo = encodeURIComponent(`Hola administrador,\n\nMe gustaría unirme como técnico a la plataforma.\n\nNombre: ${name}\nEspecialidad: ${category}\n\nQuedo a la espera de las instrucciones.`);
