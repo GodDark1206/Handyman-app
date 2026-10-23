@@ -282,14 +282,14 @@
         </div>
     </div>
 
-    <!-- MODAL DE REGISTRO DIRECTO CON GPS REAL -->
+    <!-- MODAL DE REGISTRO FORMAL (SOLICITUD) -->
     <div id="joinModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
         <div class="bg-white p-6 rounded-2xl max-w-md w-full shadow-2xl space-y-4">
             <div class="flex justify-between items-center">
-                <h3 class="text-xl font-bold text-blue-900">💼 Registro Rápido con GPS Real</h3>
+                <h3 class="text-xl font-bold text-blue-900">💼 Únete como Técnico</h3>
                 <button onclick="closeJoinModal()" class="text-gray-400 hover:text-gray-600 text-2xl font-bold">&times;</button>
             </div>
-            <p class="text-xs text-gray-500">Crea tu cuenta de prueba usando tu ubicación GPS actual en este preciso lugar.</p>
+            <p class="text-xs text-gray-500">Envía tu solicitud para unirte a la red de expertos en servicios a domicilio.</p>
             
             <div class="space-y-3 pt-2">
                 <div>
@@ -306,16 +306,13 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">PIN Personal de Acceso</label>
-                    <input type="password" id="joinPin" placeholder="Ej. 1234" value="1234" class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">PIN Personal deseado</label>
+                    <input type="password" id="joinPin" placeholder="Ej. 1234" class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
 
-                <div class="pt-2 grid grid-cols-1 gap-2">
-                    <button onclick="registerTechnicianWithGPS()" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2 shadow-md">
-                        📍 Registrar con mi GPS Actual
-                    </button>
-                    <button onclick="contactViaWhatsApp()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-center gap-2">
-                        💬 O enviar por WhatsApp
+                <div class="pt-2">
+                    <button onclick="sendJoinRequestWhatsApp()" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2 shadow-md">
+                        💬 Enviar Solicitud por WhatsApp
                     </button>
                 </div>
             </div>
@@ -864,8 +861,7 @@
         function openJoinModal() { document.getElementById('joinModal').classList.remove('hidden'); }
         function closeJoinModal() { document.getElementById('joinModal').classList.add('hidden'); }
 
-        // NUEVA FUNCIÓN: REGISTRO DE TÉCNICO CAPTURANDO EL GPS ACTUAL DEL DISPOSITIVO
-        function registerTechnicianWithGPS() {
+        function sendJoinRequestWhatsApp() {
             const name = document.getElementById('joinName').value.trim();
             const category = document.getElementById('joinCategory').value;
             const pin = document.getElementById('joinPin').value.trim();
@@ -882,60 +878,28 @@
                 return;
             }
 
-            if (!navigator.geolocation) {
-                alert("Tu dispositivo no soporta geolocalización.");
-                return;
-            }
+            // Opcional: También podemos guardarlo como pendiente en Firebase directamente si prefieres
+            const techId = 'TECH-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+            const nuevaSolicitud = {
+                id: techId,
+                name: name,
+                category: category,
+                pin: pin,
+                approved: false, // Llega como pendiente para aprobar en el panel admin
+                rating: "5.0 ⭐",
+                photo: "👨‍🔧",
+                lat: 8.9824,
+                lng: -79.5199
+            };
 
-            alert("Obteniendo tu ubicación GPS actual...");
-
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const realLat = position.coords.latitude;
-                    const realLng = position.coords.longitude;
-                    const techId = 'TECH-' + Math.random().toString(36).substr(2, 6).toUpperCase();
-
-                    const newTechnician = {
-                        id: techId,
-                        name: name,
-                        category: category,
-                        pin: pin,
-                        approved: true, // Aprobado automáticamente para prueba inmediata
-                        rating: "5.0 ⭐",
-                        photo: "👨‍🔧",
-                        lat: realLat,
-                        lng: realLng
-                    };
-
-                    db.ref('technicians/' + techId).set(newTechnician)
-                        .then(() => {
-                            alert(`¡Registro de prueba exitoso!\n\nTu ID: ${techId}\nTu PIN: ${pin}\nUbicación GPS guardada: ${realLat.toFixed(4)}, ${realLng.toFixed(4)}`);
-                            closeJoinModal();
-                            openTechAuthModal(); // Abre el portal de login para que ingreses de una vez
-                        })
-                        .catch((error) => alert("Error al guardar en Firebase: " + error.message));
-                },
-                (error) => {
-                    alert("No se pudo obtener el GPS. Asegúrate de permitir el acceso a la ubicación en tu navegador.");
-                    console.error("Error GPS:", error);
-                },
-                { enableHighAccuracy: true, timeout: 10000 }
-            );
-        }
-
-        function contactViaWhatsApp() {
-            const name = document.getElementById('joinName').value.trim();
-            const category = document.getElementById('joinCategory').value;
-
-            if (!name) {
-                alert("Por favor ingresa tu nombre completo antes de continuar.");
-                document.getElementById('joinName').focus();
-                return;
-            }
-
-            const tuNumeroWhatsApp = "65113278"; 
-            const mensaje = encodeURIComponent(`Hola, soy ${name} y me quiero registrar como técnico especialista en ${category} en Handyman Express.`);
-            window.open(`https://wa.me/${tuNumeroWhatsApp}?text=${mensaje}`, '_blank');
+            db.ref('technicians/' + techId).set(nuevaSolicitud)
+                .then(() => {
+                    const tuNumeroWhatsApp = "50700000000"; 
+                    const mensaje = encodeURIComponent(`Hola Admin, soy ${name}. Me registré como técnico de ${category} en Handyman Express (ID: ${techId}). ¡Por favor apruébame en el panel!`);
+                    window.open(`https://wa.me/${tuNumeroWhatsApp}?text=${mensaje}`, '_blank');
+                    closeJoinModal();
+                })
+                .catch(err => alert("Error al registrar solicitud: " + err.message));
         }
 
         window.onload = () => {
