@@ -370,9 +370,9 @@
             localStorage.setItem('handyman_client_id', myClientId);
         }
 
-        // MAPA BASE OSM HUMANITARIO (100% Gratuito, sin API Key y sin bloqueos de tarjeta)
-        const MAP_TILE_URL = 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png';
-        const MAP_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles courtesy of <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a>';
+        // MAPA BASE OSM ESTÁNDAR OFICIAL (100% Gratuito, sin API Key y sin bloqueos en Vercel)
+        const MAP_TILE_URL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+        const MAP_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
         const serviceCatalog = {
             "Plomería": [
@@ -826,7 +826,7 @@
                     this.reset();
                     updateServiceTasks();
                 })
-                .catch((error) => alert("Error: " + error.message));
+                .catch((error) => alert("Error: " + error.name));
         });
 
         function updateOrdersUI() {
