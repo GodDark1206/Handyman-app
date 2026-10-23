@@ -894,7 +894,7 @@
 
             db.ref('technicians/' + techId).set(nuevaSolicitud)
                 .then(() => {
-                    const tuNumeroWhatsApp = "50700000000"; 
+                    const tuNumeroWhatsApp = "65113278"; 
                     const mensaje = encodeURIComponent(`Hola Admin, soy ${name}. Me registré como técnico de ${category} en Handyman Express (ID: ${techId}). ¡Por favor apruébame en el panel!`);
                     window.open(`https://wa.me/${tuNumeroWhatsApp}?text=${mensaje}`, '_blank');
                     closeJoinModal();
