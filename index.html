@@ -6,7 +6,7 @@
     <title>Handyman Express - Plataforma Multi-Técnico</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Leaflet CSS (100% Gratuito y sin tarjeta) -->
+    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <!-- SheetJS para exportar a Excel automáticamente -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -26,6 +26,9 @@
             
             <div class="flex gap-2 sm:gap-3 text-sm font-semibold items-center">
                 <button onclick="showSection('landing')" class="hover:text-amber-400 transition hidden md:inline-block">Inicio</button>
+                <button onclick="showSection('team')" class="hover:text-amber-400 transition flex items-center gap-1">
+                    👥 Nuestros Técnicos
+                </button>
                 <button onclick="showSection('app')" class="bg-amber-500 text-gray-900 px-3.5 py-2 rounded-xl font-bold hover:bg-amber-400 transition shadow-md text-xs sm:text-sm">
                     🚀 Pedir Servicio
                 </button>
@@ -56,12 +59,28 @@
                     <button onclick="showSection('app')" class="bg-amber-500 hover:bg-amber-400 text-gray-900 text-lg font-extrabold px-8 py-4 rounded-2xl shadow-xl transition">
                         📍 Pedir Técnico Ahora
                     </button>
-                    <button onclick="openJoinModal()" class="bg-blue-800/80 hover:bg-blue-800 text-white font-bold px-6 py-4 rounded-2xl border border-blue-700 transition">
-                        💼 ¿Eres Técnico? Únete Aquí
+                    <button onclick="showSection('team')" class="bg-blue-800/80 hover:bg-blue-800 text-white font-bold px-6 py-4 rounded-2xl border border-blue-700 transition">
+                        👥 Conoce a Nuestro Equipo
                     </button>
                 </div>
             </div>
         </section>
+    </div>
+
+    <!-- NUEVO APARTADO: CONOCER A LOS TÉCNICOS -->
+    <div id="page-team" class="hidden max-w-6xl mx-auto p-4 flex-grow w-full space-y-8 py-8">
+        <div class="text-center space-y-2 max-w-2xl mx-auto">
+            <span class="text-xs font-bold text-blue-600 bg-blue-100 px-3 py-1 rounded-full uppercase">Equipo Profesional</span>
+            <h2 class="text-3xl font-black text-blue-900">Nuestros Técnicos Calificados</h2>
+            <p class="text-sm text-gray-600">Conoce al equipo de expertos verificado listo para ayudarte en todo Panamá.</p>
+        </div>
+
+        <div id="teamGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Se llena dinámicamente con Firebase -->
+            <div class="col-span-full p-8 text-center text-gray-400 bg-white rounded-2xl border border-gray-200">
+                Cargando perfiles de técnicos...
+            </div>
+        </div>
     </div>
 
     <!-- 2. CLIENTE: APLICACIÓN DE PEDIDOS -->
@@ -282,14 +301,14 @@
         </div>
     </div>
 
-    <!-- MODAL DE REGISTRO FORMAL (SOLICITUD) -->
+    <!-- MODAL DE REGISTRO FORMAL AMPLIA MÁS DETALLES -->
     <div id="joinModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
-        <div class="bg-white p-6 rounded-2xl max-w-md w-full shadow-2xl space-y-4">
+        <div class="bg-white p-6 rounded-2xl max-w-md w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center">
                 <h3 class="text-xl font-bold text-blue-900">💼 Únete como Técnico</h3>
                 <button onclick="closeJoinModal()" class="text-gray-400 hover:text-gray-600 text-2xl font-bold">&times;</button>
             </div>
-            <p class="text-xs text-gray-500">Envía tu solicitud para unirte a la red de expertos en servicios a domicilio.</p>
+            <p class="text-xs text-gray-500">Llena tu perfil para unirte a la red de expertos en servicios a domicilio.</p>
             
             <div class="space-y-3 pt-2">
                 <div>
@@ -304,6 +323,14 @@
                         <option value="Aire Acondicionado">❄️ Aire Acondicionado</option>
                         <option value="Techos y Tejados">🏠 Techos y Tejados</option>
                     </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Años de Experiencia</label>
+                    <input type="number" id="joinExperience" placeholder="Ej. 5" min="0" max="40" class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Breve Descripción / Biografía</label>
+                    <textarea id="joinBio" rows="2" placeholder="Ej. Especialista en reparación de fugas, mantenimiento preventivo e instalaciones industriales." class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-700 uppercase mb-1">PIN Personal deseado</label>
@@ -371,7 +398,6 @@
             localStorage.setItem('handyman_client_id', myClientId);
         }
 
-        // MAPA BASE OSM ESTÁNDAR OFICIAL (100% Gratuito, sin API Key y sin bloqueos en Vercel)
         const MAP_TILE_URL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
         const MAP_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
@@ -419,6 +445,7 @@
             }
             populateTechLoginSelect();
             updateServiceTasks();
+            renderTeamGrid();
             if (map) renderTechniciansOnMap();
             if (techMap && activeTechUser) renderTechPortalMap();
             
@@ -431,8 +458,75 @@
             const data = snapshot.val();
             myOrders = data ? Object.values(data) : [];
             updateOrdersUI();
+            renderTeamGrid();
             if (activeTechUser) renderIndividualTechPortal();
         });
+
+        // NUEVA FUNCIÓN: RENDERIZAR LA TARJETA PÚBLICA DE CADA TÉCNICO
+        function renderTeamGrid() {
+            const grid = document.getElementById('teamGrid');
+            if (!grid) return;
+
+            if (technicians.length === 0) {
+                grid.innerHTML = `<div class="col-span-full p-8 text-center text-gray-400 bg-white rounded-2xl border border-gray-200">Aún no hay técnicos registrados y aprobados en la plataforma.</div>`;
+                return;
+            }
+
+            grid.innerHTML = technicians.map(tech => {
+                const completedJobs = myOrders.filter(o => (o.techId === tech.id || o.techName === tech.name) && o.status.includes('Completado')).length;
+                const dateJoined = tech.joinedDate || "Enero 2026";
+                const expYears = tech.experience ? `${tech.experience} años` : "Amplia";
+                const bio = tech.bio || "Técnico certificado con alta efectividad en atención domiciliaria.";
+
+                return `
+                    <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-200 flex flex-col justify-between hover:shadow-xl transition space-y-4">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-14 h-14 bg-blue-100 text-2xl flex items-center justify-center rounded-2xl border border-blue-200">
+                                    ${tech.photo || '👨‍🔧'}
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-900 text-lg">${tech.name}</h3>
+                                    <span class="text-xs font-bold bg-amber-100 text-amber-900 px-2.5 py-0.5 rounded-full">${tech.category}</span>
+                                </div>
+                            </div>
+                            <span class="text-xs font-bold text-amber-500 bg-amber-50 px-2 py-1 rounded-lg border border-amber-200">
+                                ${tech.rating || '5.0 ⭐'}
+                            </span>
+                        </div>
+
+                        <p class="text-xs text-gray-600 line-clamp-3">${bio}</p>
+
+                        <div class="grid grid-cols-2 gap-2 text-xs bg-gray-50 p-3 rounded-xl border border-gray-100">
+                            <div>
+                                <span class="text-gray-400 block font-bold">Experiencia</span>
+                                <span class="font-bold text-gray-800">${expYears}</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400 block font-bold">Trabajos Listos</span>
+                                <span class="font-bold text-blue-900">${completedJobs} proyectos</span>
+                            </div>
+                            <div class="col-span-2 pt-1 border-t border-gray-200">
+                                <span class="text-gray-400 font-bold">Miembro desde:</span>
+                                <span class="font-semibold text-gray-700">${dateJoined}</span>
+                            </div>
+                        </div>
+
+                        <button onclick="requestSpecificTech('${tech.id}')" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-2.5 rounded-xl text-xs transition">
+                            📍 Solicitar Servicio a ${tech.name.split(' ')[0]}
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function requestSpecificTech(techId) {
+            showSection('app');
+            const select = document.getElementById('selectedTech');
+            if (select) {
+                select.value = techId;
+            }
+        }
 
         function exportOrdersToExcel() {
             if (!myOrders || myOrders.length === 0) {
@@ -463,12 +557,16 @@
 
         function showSection(sectionName) {
             document.getElementById('page-landing').classList.add('hidden');
+            document.getElementById('page-team').classList.add('hidden');
             document.getElementById('page-app').classList.add('hidden');
             document.getElementById('page-tech-portal').classList.add('hidden');
             document.getElementById('page-admin-portal').classList.add('hidden');
 
             if (sectionName === 'landing') {
                 document.getElementById('page-landing').classList.remove('hidden');
+            } else if (sectionName === 'team') {
+                document.getElementById('page-team').classList.remove('hidden');
+                renderTeamGrid();
             } else if (sectionName === 'app') {
                 document.getElementById('page-app').classList.remove('hidden');
                 if (!map) initMap();
@@ -527,7 +625,7 @@
                     <div>
                         <span class="text-xs font-bold text-amber-600 bg-amber-100 px-2 py-0.5 rounded">Pendiente</span>
                         <h4 class="font-bold text-gray-900 text-base mt-1">👨‍✈️ ${t.name}</h4>
-                        <p class="text-xs text-gray-600">Especialidad: <b>${t.category}</b> • ID: ${t.id}</p>
+                        <p class="text-xs text-gray-600">Especialidad: <b>${t.category}</b> • Exp: ${t.experience || 0} años</p>
                     </div>
                     <div class="flex gap-2">
                         <button onclick="approveTech('${t.id}')" class="bg-green-600 hover:bg-green-700 text-white font-bold px-3 py-2 rounded-xl text-xs">✅ Aprobar</button>
@@ -864,6 +962,8 @@
         function sendJoinRequestWhatsApp() {
             const name = document.getElementById('joinName').value.trim();
             const category = document.getElementById('joinCategory').value;
+            const experience = document.getElementById('joinExperience').value || "0";
+            const bio = document.getElementById('joinBio').value.trim();
             const pin = document.getElementById('joinPin').value.trim();
 
             if (!name) {
@@ -878,24 +978,30 @@
                 return;
             }
 
-            // Opcional: También podemos guardarlo como pendiente en Firebase directamente si prefieres
             const techId = 'TECH-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+            
+            // Capturar la fecha de ingreso actual automáticamente
+            const fechaActual = new Date().toLocaleDateString('es-PA', { month: 'short', year: 'numeric' });
+
             const nuevaSolicitud = {
                 id: techId,
                 name: name,
                 category: category,
+                experience: experience,
+                bio: bio || "Técnico certificado con alta efectividad en atención domiciliaria.",
                 pin: pin,
-                approved: false, // Llega como pendiente para aprobar en el panel admin
+                approved: false,
                 rating: "5.0 ⭐",
                 photo: "👨‍🔧",
+                joinedDate: fechaActual,
                 lat: 8.9824,
                 lng: -79.5199
             };
 
             db.ref('technicians/' + techId).set(nuevaSolicitud)
                 .then(() => {
-                    const tuNumeroWhatsApp = "65113278"; 
-                    const mensaje = encodeURIComponent(`Hola Admin, soy ${name}. Me registré como técnico de ${category} en Handyman Express (ID: ${techId}). ¡Por favor apruébame en el panel!`);
+                    const tuNumeroWhatsApp = "50700000000"; 
+                    const mensaje = encodeURIComponent(`Hola Admin, soy ${name}. Me registré como técnico de ${category} (${experience} años exp) en Handyman Express (ID: ${techId}). ¡Por favor apruébame en el panel!`);
                     window.open(`https://wa.me/${tuNumeroWhatsApp}?text=${mensaje}`, '_blank');
                     closeJoinModal();
                 })
@@ -909,3 +1015,6 @@
     </script>
 </body>
 </html>
+git add .
+git commit -m "Añadido registro rápido con GPS real"
+git push origin main
