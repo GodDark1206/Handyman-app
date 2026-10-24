@@ -209,11 +209,9 @@
                         </div>
                     </div>
 
-                    <!-- CAMPO FOTO CAPTURADA CON CÁMARA O ARCHIVO -->
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">📸 Tomar o Subir Foto del Problema</label>
                         <input type="file" id="clientProblemPhotoFile" accept="image/*" capture="environment" class="w-full p-2.5 border border-gray-300 rounded-xl text-sm bg-gray-50 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
-                        <span class="text-[10px] text-gray-400 mt-1 block">En celulares abrirá la cámara directamente para tomar la foto.</span>
                     </div>
 
                     <div class="bg-blue-50 p-4 rounded-xl border border-blue-200 flex justify-between items-center">
@@ -283,9 +281,10 @@
             </div>
         </div>
 
+        <!-- SECCIÓN DE SUBIDA DE PROYECTOS DEL TÉCNICO (CON CÁMARA O ARCHIVO) -->
         <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-200 space-y-4">
             <h3 class="text-lg font-bold text-blue-900 flex items-center gap-2">
-                📸 Añadir Proyecto al Portafolio (Requiere Revisión)
+                📸 Añadir Evidencia de Trabajo al Portafolio (Requiere Revisión)
             </h3>
             <form id="projectUploadForm" class="space-y-3">
                 <div class="grid md:grid-cols-2 gap-3">
@@ -294,8 +293,8 @@
                         <input type="text" id="projectTitle" required placeholder="Ej. Instalación de Climatización Industrial" class="w-full p-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">URL de la Foto del Trabajo</label>
-                        <input type="url" id="projectImageUrl" required placeholder="https://ejemplo.com/foto-proyecto.jpg" class="w-full p-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">📸 Tomar o Subir Foto de Evidencia</label>
+                        <input type="file" id="projectImageFile" accept="image/*" capture="environment" required class="w-full p-2 border border-gray-300 rounded-xl text-xs bg-gray-50 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
                     </div>
                 </div>
                 <div>
@@ -303,7 +302,7 @@
                     <textarea id="projectDesc" rows="2" placeholder="Ej. Se reemplazó tubería dañada y se realizó prueba de presión con garantía de 1 año." class="w-full p-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                 </div>
                 <button type="submit" class="bg-blue-900 hover:bg-blue-800 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow-md transition">
-                    📤 Enviar Proyecto a Revisión del Administrador
+                    📤 Enviar Evidencia a Revisión del Administrador
                 </button>
             </form>
         </div>
@@ -656,6 +655,7 @@
             showSection('tech-profile');
         }
 
+        // ENVÍO DE PROYECTOS DEL TÉCNICO CON SOPORTE DE CÁMARA / ARCHIVO
         document.getElementById('projectUploadForm').addEventListener('submit', function(e) {
             e.preventDefault();
             if (!activeTechUser) {
@@ -664,27 +664,39 @@
             }
 
             const title = document.getElementById('projectTitle').value.trim();
-            const imageUrl = document.getElementById('projectImageUrl').value.trim();
+            const fileInput = document.getElementById('projectImageFile');
             const description = document.getElementById('projectDesc').value.trim();
             const projId = 'PROJ-' + Date.now().toString().slice(-6);
 
-            const newProject = {
-                id: projId,
-                techId: activeTechUser.id,
-                techName: activeTechUser.name,
-                title: title,
-                imageUrl: imageUrl,
-                description: description,
-                approved: false,
-                date: new Date().toLocaleDateString('es-PA')
+            const procesarGuardadoProyecto = (photoBase64) => {
+                const newProject = {
+                    id: projId,
+                    techId: activeTechUser.id,
+                    techName: activeTechUser.name,
+                    title: title,
+                    imageUrl: photoBase64,
+                    description: description,
+                    approved: false,
+                    date: new Date().toLocaleDateString('es-PA')
+                };
+
+                db.ref('projects/' + projId).set(newProject)
+                    .then(() => {
+                        alert("¡Proyecto enviado con éxito! El administrador lo revisará antes de publicarlo en tu perfil.");
+                        document.getElementById('projectUploadForm').reset();
+                    })
+                    .catch(err => alert("Error al subir proyecto: " + err.message));
             };
 
-            db.ref('projects/' + projId).set(newProject)
-                .then(() => {
-                    alert("¡Proyecto enviado con éxito! El administrador lo revisará antes de publicarlo en tu perfil.");
-                    this.reset();
-                })
-                .catch(err => alert("Error al subir proyecto: " + err.message));
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(uploadEvent) {
+                    procesarGuardadoProyecto(uploadEvent.target.result);
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                alert("Por favor selecciona o toma una foto de evidencia.");
+            }
         });
 
         function requestSpecificTech(techId) {
@@ -1096,7 +1108,6 @@
 
         document.getElementById('locationZone').addEventListener('change', calculateCost);
 
-        // FORMULARIO DE PEDIDO CON CONVERSIÓN DE FOTO A BASE64 (CÁMARA / ARCHIVO)
         document.getElementById('orderForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const selectedTechId = document.getElementById('selectedTech').value;
