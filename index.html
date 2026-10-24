@@ -67,23 +67,77 @@
         </section>
     </div>
 
-    <!-- NUEVO APARTADO: CONOCER A LOS TÉCNICOS -->
+    <!-- 2. APARTADO: CONOCER A LOS TÉCNICOS (CATÁLOGO GENERAL) -->
     <div id="page-team" class="hidden max-w-6xl mx-auto p-4 flex-grow w-full space-y-8 py-8">
         <div class="text-center space-y-2 max-w-2xl mx-auto">
             <span class="text-xs font-bold text-blue-600 bg-blue-100 px-3 py-1 rounded-full uppercase">Equipo Profesional</span>
             <h2 class="text-3xl font-black text-blue-900">Nuestros Técnicos Calificados</h2>
-            <p class="text-sm text-gray-600">Conoce al equipo de expertos verificado listo para ayudarte en todo Panamá.</p>
+            <p class="text-sm text-gray-600">Haz clic en cualquier técnico para ver sus proyectos realizados y detalles de perfil.</p>
         </div>
 
         <div id="teamGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Se llena dinámicamente con Firebase -->
             <div class="col-span-full p-8 text-center text-gray-400 bg-white rounded-2xl border border-gray-200">
                 Cargando perfiles de técnicos...
             </div>
         </div>
     </div>
 
-    <!-- 2. CLIENTE: APLICACIÓN DE PEDIDOS -->
+    <!-- 3. NUEVO APARTADO: PERFIL INDIVIDUAL PÚBLICO DEL TÉCNICO -->
+    <div id="page-tech-profile" class="hidden max-w-5xl mx-auto p-4 flex-grow w-full space-y-8 py-6">
+        <button onclick="showSection('team')" class="text-xs font-bold text-blue-900 hover:text-blue-700 flex items-center gap-1 bg-gray-200 px-3 py-2 rounded-xl">
+            ← Volver al equipo de técnicos
+        </button>
+
+        <!-- ENCABEZADO DEL TÉCNICO -->
+        <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div class="flex items-center gap-4">
+                <div id="publicTechPhoto" class="w-20 h-20 bg-blue-100 text-4xl flex items-center justify-center rounded-2xl border border-blue-200">
+                    👨‍🔧
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h2 id="publicTechName" class="text-2xl font-black text-gray-900">Cargando...</h2>
+                        <span id="publicTechRating" class="text-xs font-bold text-amber-500 bg-amber-50 px-2 py-1 rounded-lg border border-amber-200">5.0 ⭐</span>
+                    </div>
+                    <span id="publicTechCategory" class="text-xs font-bold bg-amber-100 text-amber-900 px-2.5 py-0.5 rounded-full inline-block mt-1">Especialidad</span>
+                    <p id="publicTechJoined" class="text-xs text-gray-400 mt-1">Miembro desde: -</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4 w-full md:w-auto border-t md:border-t-0 pt-4 md:pt-0">
+                <div class="text-center px-4 border-r border-gray-200">
+                    <span class="text-xs text-gray-400 font-bold block">Experiencia</span>
+                    <span id="publicTechExp" class="text-lg font-black text-gray-800">0 años</span>
+                </div>
+                <div class="text-center px-4">
+                    <span class="text-xs text-gray-400 font-bold block">Trabajos</span>
+                    <span id="publicTechJobsCount" class="text-lg font-black text-blue-900">0 realizados</span>
+                </div>
+                <button id="btnHireTech" class="bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold px-5 py-3 rounded-xl text-sm shadow-md transition ml-auto">
+                    🚀 Contratar Servicio
+                </button>
+            </div>
+        </div>
+
+        <!-- BIOGRAFÍA -->
+        <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-200 space-y-2">
+            <h3 class="text-lg font-bold text-blue-900">📖 Sobre mí</h3>
+            <p id="publicTechBio" class="text-sm text-gray-600 leading-relaxed">Sin biografía disponible.</p>
+        </div>
+
+        <!-- PORTAFOLIO DE PROYECTOS REALIZADOS -->
+        <div class="space-y-4">
+            <h3 class="text-xl font-bold text-blue-900 flex items-center gap-2">
+                📸 Proyectos Realizados & Galería de Trabajos
+            </h3>
+
+            <div id="publicTechProjects" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Se llena dinámicamente con proyectos aprobados -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. CLIENTE: APLICACIÓN DE PEDIDOS -->
     <div id="page-app" class="hidden max-w-5xl mx-auto p-4 flex-grow w-full space-y-6">
         <div class="flex justify-between items-center border-b border-gray-200 pb-3">
             <div class="flex gap-2">
@@ -184,7 +238,7 @@
         </section>
     </div>
 
-    <!-- 3. PERFIL TÉCNICO AUTENTICADO -->
+    <!-- 5. PERFIL TÉCNICO AUTENTICADO (PORTAL DEL TÉCNICO CON GESTIÓN DE PROYECTOS) -->
     <div id="page-tech-portal" class="hidden max-w-5xl mx-auto p-4 flex-grow w-full space-y-6">
         <div class="bg-gradient-to-r from-blue-900 to-indigo-900 text-white p-6 rounded-2xl shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div class="space-y-1">
@@ -226,6 +280,32 @@
             </div>
         </div>
 
+        <!-- SECCIÓN DE SUBIDA DE PROYECTOS PARA REVISIÓN -->
+        <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-200 space-y-4">
+            <h3 class="text-lg font-bold text-blue-900 flex items-center gap-2">
+                📸 Añadir Proyecto al Portafolio (Requiere Revisión)
+            </h3>
+            <form id="projectUploadForm" class="space-y-3">
+                <div class="grid md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Título del Trabajo</label>
+                        <input type="text" id="projectTitle" required placeholder="Ej. Instalación de Climatización Industrial" class="w-full p-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">URL de la Foto del Trabajo</label>
+                        <input type="url" id="projectImageUrl" required placeholder="https://ejemplo.com/foto-proyecto.jpg" class="w-full p-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Descripción del Trabajo Realizado</label>
+                    <textarea id="projectDesc" rows="2" placeholder="Ej. Se reemplazó tubería dañada y se realizó prueba de presión con garantía de 1 año." class="w-full p-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+                <button type="submit" class="bg-blue-900 hover:bg-blue-800 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow-md transition">
+                    📤 Enviar Proyecto a Revisión del Administrador
+                </button>
+            </form>
+        </div>
+
         <!-- MAPA PARA EL TÉCNICO -->
         <div class="bg-white p-4 rounded-2xl shadow-md border border-gray-200 space-y-2">
             <div class="flex justify-between items-center">
@@ -245,25 +325,34 @@
         </div>
     </div>
 
-    <!-- 4. PANEL DE ADMINISTRACIÓN -->
+    <!-- 6. PANEL DE ADMINISTRACIÓN (REVISIÓN DE TÉCNICOS Y PROYECTOS) -->
     <div id="page-admin-portal" class="hidden max-w-4xl mx-auto p-4 flex-grow w-full space-y-6">
         <div class="bg-gray-900 text-white p-6 rounded-2xl shadow-lg flex justify-between items-center">
             <div>
                 <span class="bg-amber-500 text-gray-900 text-xs font-black px-2.5 py-1 rounded-md uppercase">Panel de Control</span>
-                <h2 class="text-2xl font-black mt-1">Aprobación de Técnicos</h2>
+                <h2 class="text-2xl font-black mt-1">Gestión & Revisiones</h2>
             </div>
             <button onclick="showSection('landing')" class="bg-gray-800 hover:bg-gray-700 text-xs text-gray-300 px-3 py-2 rounded-xl">Salir de Admin</button>
         </div>
 
+        <!-- SECCIÓN 1: REVISIÓN DE TÉCNICOS -->
         <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-200 space-y-4">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-gray-100 pb-4">
-                <h3 class="font-bold text-gray-900 text-lg">Solicitudes Pendientes de Revisión</h3>
+                <h3 class="font-bold text-gray-900 text-lg">👨‍✈️ Solicitudes de Técnicos Pendientes</h3>
                 <button onclick="exportOrdersToExcel()" class="bg-green-600 hover:bg-green-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-md transition">
                     📊 Descargar Reporte en Excel
                 </button>
             </div>
             <div id="adminPendingList" class="space-y-3">
                 <div class="p-6 text-center text-gray-400 bg-gray-50 rounded-xl">No hay solicitudes pendientes.</div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 2: REVISIÓN DE PROYECTOS SUBIDOS -->
+        <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-200 space-y-4">
+            <h3 class="font-bold text-gray-900 text-lg border-b border-gray-100 pb-3">📸 Proyectos de Técnicos Pendientes de Revisión</h3>
+            <div id="adminPendingProjects" class="space-y-3">
+                <div class="p-6 text-center text-gray-400 bg-gray-50 rounded-xl">No hay proyectos pendientes de revisión.</div>
             </div>
         </div>
     </div>
@@ -301,7 +390,7 @@
         </div>
     </div>
 
-    <!-- MODAL DE REGISTRO FORMAL AMPLIA MÁS DETALLES -->
+    <!-- MODAL DE REGISTRO FORMAL -->
     <div id="joinModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
         <div class="bg-white p-6 rounded-2xl max-w-md w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center">
@@ -428,6 +517,8 @@
         let technicians = [];         
         let activeTechUser = null;
         let myOrders = [];
+        let allProjects = [];
+        let currentViewingTech = null;
         let map, userMarker;
         let techMap;
         let clientLayerGroup = L.layerGroup();
@@ -462,7 +553,16 @@
             if (activeTechUser) renderIndividualTechPortal();
         });
 
-        // NUEVA FUNCIÓN: RENDERIZAR LA TARJETA PÚBLICA DE CADA TÉCNICO
+        db.ref('projects').on('value', (snapshot) => {
+            const data = snapshot.val();
+            allProjects = data ? Object.values(data) : [];
+            if (currentViewingTech) openTechProfilePage(currentViewingTech.id);
+            if (!document.getElementById('page-admin-portal').classList.contains('hidden')) {
+                renderAdminPortal();
+            }
+        });
+
+        // RENDERIZAR EQUIPO DE TÉCNICOS
         function renderTeamGrid() {
             const grid = document.getElementById('teamGrid');
             if (!grid) return;
@@ -474,19 +574,17 @@
 
             grid.innerHTML = technicians.map(tech => {
                 const completedJobs = myOrders.filter(o => (o.techId === tech.id || o.techName === tech.name) && o.status.includes('Completado')).length;
-                const dateJoined = tech.joinedDate || "Enero 2026";
                 const expYears = tech.experience ? `${tech.experience} años` : "Amplia";
-                const bio = tech.bio || "Técnico certificado con alta efectividad en atención domiciliaria.";
 
                 return `
                     <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-200 flex flex-col justify-between hover:shadow-xl transition space-y-4">
-                        <div class="flex items-start justify-between">
+                        <div class="flex items-start justify-between cursor-pointer" onclick="openTechProfilePage('${tech.id}')">
                             <div class="flex items-center gap-3">
                                 <div class="w-14 h-14 bg-blue-100 text-2xl flex items-center justify-center rounded-2xl border border-blue-200">
                                     ${tech.photo || '👨‍🔧'}
                                 </div>
                                 <div>
-                                    <h3 class="font-bold text-gray-900 text-lg">${tech.name}</h3>
+                                    <h3 class="font-bold text-gray-900 text-lg hover:text-blue-600 transition">${tech.name}</h3>
                                     <span class="text-xs font-bold bg-amber-100 text-amber-900 px-2.5 py-0.5 rounded-full">${tech.category}</span>
                                 </div>
                             </div>
@@ -495,7 +593,7 @@
                             </span>
                         </div>
 
-                        <p class="text-xs text-gray-600 line-clamp-3">${bio}</p>
+                        <p class="text-xs text-gray-600 line-clamp-2 cursor-pointer" onclick="openTechProfilePage('${tech.id}')">${tech.bio || "Técnico certificado con alta efectividad en atención domiciliaria."}</p>
 
                         <div class="grid grid-cols-2 gap-2 text-xs bg-gray-50 p-3 rounded-xl border border-gray-100">
                             <div>
@@ -506,19 +604,93 @@
                                 <span class="text-gray-400 block font-bold">Trabajos Listos</span>
                                 <span class="font-bold text-blue-900">${completedJobs} proyectos</span>
                             </div>
-                            <div class="col-span-2 pt-1 border-t border-gray-200">
-                                <span class="text-gray-400 font-bold">Miembro desde:</span>
-                                <span class="font-semibold text-gray-700">${dateJoined}</span>
-                            </div>
                         </div>
 
-                        <button onclick="requestSpecificTech('${tech.id}')" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-2.5 rounded-xl text-xs transition">
-                            📍 Solicitar Servicio a ${tech.name.split(' ')[0]}
-                        </button>
+                        <div class="flex gap-2">
+                            <button onclick="openTechProfilePage('${tech.id}')" class="w-1/2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs transition">
+                                👤 Ver Perfil
+                            </button>
+                            <button onclick="requestSpecificTech('${tech.id}')" class="w-1/2 bg-blue-900 hover:bg-blue-800 text-white font-bold py-2.5 rounded-xl text-xs transition">
+                                🚀 Contratar
+                            </button>
+                        </div>
                     </div>
                 `;
             }).join('');
         }
+
+        // ABRIR PÁGINA PÚBLICA DEDICADA DEL TÉCNICO
+        function openTechProfilePage(techId) {
+            const tech = technicians.find(t => t.id === techId);
+            if (!tech) return;
+
+            currentViewingTech = tech;
+            const completedJobs = myOrders.filter(o => (o.techId === tech.id || o.techName === tech.name) && o.status.includes('Completado')).length;
+
+            document.getElementById('publicTechPhoto').textContent = tech.photo || '👨‍🔧';
+            document.getElementById('publicTechName').textContent = tech.name;
+            document.getElementById('publicTechCategory').textContent = tech.category;
+            document.getElementById('publicTechRating').textContent = tech.rating || '5.0 ⭐';
+            document.getElementById('publicTechJoined').textContent = `Miembro desde: ${tech.joinedDate || 'Enero 2026'}`;
+            document.getElementById('publicTechExp').textContent = `${tech.experience || 'Varios'} años`;
+            document.getElementById('publicTechJobsCount').textContent = `${completedJobs} realizados`;
+            document.getElementById('publicTechBio').textContent = tech.bio || "Técnico especialista comprometido con la excelencia y satisfacción de cada cliente.";
+
+            document.getElementById('btnHireTech').onclick = () => requestSpecificTech(tech.id);
+
+            // Cargar Proyectos Aprobados del Técnico
+            const approvedProjects = allProjects.filter(p => p.techId === tech.id && p.approved === true);
+            const container = document.getElementById('publicTechProjects');
+
+            if (approvedProjects.length === 0) {
+                container.innerHTML = `<div class="col-span-full p-8 text-center text-gray-400 bg-white rounded-2xl border border-gray-200">Este técnico aún no tiene proyectos publicados en su portafolio.</div>`;
+            } else {
+                container.innerHTML = approvedProjects.map(proj => `
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-md border border-gray-200 space-y-3 pb-4">
+                        <img src="${proj.imageUrl}" alt="${proj.title}" class="w-full h-48 object-cover bg-gray-100" onerror="this.src='https://via.placeholder.com/400x250?text=Foto+no+disponible'">
+                        <div class="px-4 space-y-1">
+                            <h4 class="font-bold text-gray-900 text-base">${proj.title}</h4>
+                            <p class="text-xs text-gray-600">${proj.description}</p>
+                            <span class="text-[10px] text-gray-400 block pt-1">Publicado el: ${proj.date || 'Reciente'}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            showSection('tech-profile');
+        }
+
+        // TÉCNICO ENVA PROYECTO
+        document.getElementById('projectUploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (!activeTechUser) {
+                alert("Debes iniciar sesión como técnico.");
+                return;
+            }
+
+            const title = document.getElementById('projectTitle').value.trim();
+            const imageUrl = document.getElementById('projectImageUrl').value.trim();
+            const description = document.getElementById('projectDesc').value.trim();
+            const projId = 'PROJ-' + Date.now().toString().slice(-6);
+
+            const newProject = {
+                id: projId,
+                techId: activeTechUser.id,
+                techName: activeTechUser.name,
+                title: title,
+                imageUrl: imageUrl,
+                description: description,
+                approved: false, // Llega al admin para aprobación
+                date: new Date().toLocaleDateString('es-PA')
+            };
+
+            db.ref('projects/' + projId).set(newProject)
+                .then(() => {
+                    alert("¡Proyecto enviado con éxito! El administrador lo revisará antes de publicarlo en tu perfil.");
+                    this.reset();
+                })
+                .catch(err => alert("Error al subir proyecto: " + err.message));
+        });
 
         function requestSpecificTech(techId) {
             showSection('app');
@@ -558,6 +730,7 @@
         function showSection(sectionName) {
             document.getElementById('page-landing').classList.add('hidden');
             document.getElementById('page-team').classList.add('hidden');
+            document.getElementById('page-tech-profile').classList.add('hidden');
             document.getElementById('page-app').classList.add('hidden');
             document.getElementById('page-tech-portal').classList.add('hidden');
             document.getElementById('page-admin-portal').classList.add('hidden');
@@ -567,6 +740,8 @@
             } else if (sectionName === 'team') {
                 document.getElementById('page-team').classList.remove('hidden');
                 renderTeamGrid();
+            } else if (sectionName === 'tech-profile') {
+                document.getElementById('page-tech-profile').classList.remove('hidden');
             } else if (sectionName === 'app') {
                 document.getElementById('page-app').classList.remove('hidden');
                 if (!map) initMap();
@@ -611,28 +786,54 @@
             }
         }
 
+        // RENDER ADMIN COMPLETO (TÉCNICOS Y PROYECTOS)
         function renderAdminPortal() {
-            const container = document.getElementById('adminPendingList');
+            // 1. Técnicos
+            const techContainer = document.getElementById('adminPendingList');
             const pendingTechs = allTechnicians.filter(t => !t.approved);
 
             if (pendingTechs.length === 0) {
-                container.innerHTML = `<div class="p-6 text-center text-gray-400 bg-gray-50 rounded-xl">No hay solicitudes pendientes de aprobación.</div>`;
-                return;
+                techContainer.innerHTML = `<div class="p-6 text-center text-gray-400 bg-gray-50 rounded-xl">No hay solicitudes pendientes de aprobación.</div>`;
+            } else {
+                techContainer.innerHTML = pendingTechs.map(t => `
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 flex justify-between items-center">
+                        <div>
+                            <span class="text-xs font-bold text-amber-600 bg-amber-100 px-2 py-0.5 rounded">Pendiente</span>
+                            <h4 class="font-bold text-gray-900 text-base mt-1">👨‍✈️ ${t.name}</h4>
+                            <p class="text-xs text-gray-600">Especialidad: <b>${t.category}</b> • Exp: ${t.experience || 0} años</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="approveTech('${t.id}')" class="bg-green-600 hover:bg-green-700 text-white font-bold px-3 py-2 rounded-xl text-xs">✅ Aprobar</button>
+                            <button onclick="rejectTech('${t.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 font-bold px-3 py-2 rounded-xl text-xs">❌ Rechazar</button>
+                        </div>
+                    </div>
+                `).join('');
             }
 
-            container.innerHTML = pendingTechs.map(t => `
-                <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 flex justify-between items-center">
-                    <div>
-                        <span class="text-xs font-bold text-amber-600 bg-amber-100 px-2 py-0.5 rounded">Pendiente</span>
-                        <h4 class="font-bold text-gray-900 text-base mt-1">👨‍✈️ ${t.name}</h4>
-                        <p class="text-xs text-gray-600">Especialidad: <b>${t.category}</b> • Exp: ${t.experience || 0} años</p>
+            // 2. Proyectos
+            const projContainer = document.getElementById('adminPendingProjects');
+            const pendingProjects = allProjects.filter(p => !p.approved);
+
+            if (pendingProjects.length === 0) {
+                projContainer.innerHTML = `<div class="p-6 text-center text-gray-400 bg-gray-50 rounded-xl">No hay proyectos pendientes de revisión.</div>`;
+            } else {
+                projContainer.innerHTML = pendingProjects.map(p => `
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div class="flex items-center gap-3">
+                            <img src="${p.imageUrl}" class="w-16 h-16 object-cover rounded-xl border border-gray-200 bg-white" onerror="this.src='https://via.placeholder.com/100'">
+                            <div>
+                                <span class="text-xs font-bold text-blue-600 bg-blue-100 px-2 py-0.5 rounded">Técnico: ${p.techName}</span>
+                                <h4 class="font-bold text-gray-900 text-sm mt-1">${p.title}</h4>
+                                <p class="text-xs text-gray-600">${p.description}</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="approveProject('${p.id}')" class="bg-green-600 hover:bg-green-700 text-white font-bold px-3 py-2 rounded-xl text-xs">✅ Aprobar Proyecto</button>
+                            <button onclick="rejectProject('${p.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 font-bold px-3 py-2 rounded-xl text-xs">❌ Eliminar</button>
+                        </div>
                     </div>
-                    <div class="flex gap-2">
-                        <button onclick="approveTech('${t.id}')" class="bg-green-600 hover:bg-green-700 text-white font-bold px-3 py-2 rounded-xl text-xs">✅ Aprobar</button>
-                        <button onclick="rejectTech('${t.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 font-bold px-3 py-2 rounded-xl text-xs">❌ Rechazar</button>
-                    </div>
-                </div>
-            `).join('');
+                `).join('');
+            }
         }
 
         function approveTech(techId) {
@@ -645,6 +846,20 @@
             if (confirm("¿Estás seguro de eliminar esta solicitud?")) {
                 db.ref('technicians/' + techId).remove()
                     .then(() => alert("Solicitud rechazada y eliminada."))
+                    .catch(err => alert("Error: " + err.message));
+            }
+        }
+
+        function approveProject(projectId) {
+            db.ref('projects/' + projectId).update({ approved: true })
+                .then(() => alert("¡Proyecto aprobado con éxito! Ya es visible públicamente en el perfil del técnico."))
+                .catch(err => alert("Error: " + err.message));
+        }
+
+        function rejectProject(projectId) {
+            if (confirm("¿Estás seguro de rechazar este proyecto?")) {
+                db.ref('projects/' + projectId).remove()
+                    .then(() => alert("Proyecto eliminado."))
                     .catch(err => alert("Error: " + err.message));
             }
         }
@@ -979,8 +1194,6 @@
             }
 
             const techId = 'TECH-' + Math.random().toString(36).substr(2, 6).toUpperCase();
-            
-            // Capturar la fecha de ingreso actual automáticamente
             const fechaActual = new Date().toLocaleDateString('es-PA', { month: 'short', year: 'numeric' });
 
             const nuevaSolicitud = {
