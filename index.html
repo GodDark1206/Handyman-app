@@ -67,7 +67,7 @@
         </section>
     </div>
 
-    <!-- 2. APARTADO: CONOCER A LOS TÉCNICOS (CATÁLOGO GENERAL) -->
+    <!-- 2. APARTADO: CONOCER A LOS TÉCNICOS -->
     <div id="page-team" class="hidden max-w-6xl mx-auto p-4 flex-grow w-full space-y-8 py-8">
         <div class="text-center space-y-2 max-w-2xl mx-auto">
             <span class="text-xs font-bold text-blue-600 bg-blue-100 px-3 py-1 rounded-full uppercase">Equipo Profesional</span>
@@ -82,13 +82,12 @@
         </div>
     </div>
 
-    <!-- 3. NUEVO APARTADO: PERFIL INDIVIDUAL PÚBLICO DEL TÉCNICO -->
+    <!-- 3. PERFIL PÚBLICO DEDICADO DEL TÉCNICO -->
     <div id="page-tech-profile" class="hidden max-w-5xl mx-auto p-4 flex-grow w-full space-y-8 py-6">
         <button onclick="showSection('team')" class="text-xs font-bold text-blue-900 hover:text-blue-700 flex items-center gap-1 bg-gray-200 px-3 py-2 rounded-xl">
             ← Volver al equipo de técnicos
         </button>
 
-        <!-- ENCABEZADO DEL TÉCNICO -->
         <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div class="flex items-center gap-4">
                 <div id="publicTechPhoto" class="w-20 h-20 bg-blue-100 text-4xl flex items-center justify-center rounded-2xl border border-blue-200">
@@ -119,20 +118,17 @@
             </div>
         </div>
 
-        <!-- BIOGRAFÍA -->
         <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-200 space-y-2">
             <h3 class="text-lg font-bold text-blue-900">📖 Sobre mí</h3>
             <p id="publicTechBio" class="text-sm text-gray-600 leading-relaxed">Sin biografía disponible.</p>
         </div>
 
-        <!-- PORTAFOLIO DE PROYECTOS REALIZADOS -->
         <div class="space-y-4">
             <h3 class="text-xl font-bold text-blue-900 flex items-center gap-2">
                 📸 Proyectos Realizados & Galería de Trabajos
             </h3>
 
             <div id="publicTechProjects" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Se llena dinámicamente con proyectos aprobados -->
             </div>
         </div>
     </div>
@@ -213,6 +209,12 @@
                         </div>
                     </div>
 
+                    <!-- NUEVO CAMPO: FOTO DEL PROBLEMA -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">URL de la Foto del Problema (Opcional)</label>
+                        <input type="url" id="clientProblemPhoto" placeholder="https://ejemplo.com/fuga.jpg" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
+                    </div>
+
                     <div class="bg-blue-50 p-4 rounded-xl border border-blue-200 flex justify-between items-center">
                         <div>
                             <span class="text-xs text-gray-500 block uppercase font-bold">Tarifa Estimada</span>
@@ -238,7 +240,7 @@
         </section>
     </div>
 
-    <!-- 5. PERFIL TÉCNICO AUTENTICADO (PORTAL DEL TÉCNICO CON GESTIÓN DE PROYECTOS) -->
+    <!-- 5. PERFIL TÉCNICO AUTENTICADO -->
     <div id="page-tech-portal" class="hidden max-w-5xl mx-auto p-4 flex-grow w-full space-y-6">
         <div class="bg-gradient-to-r from-blue-900 to-indigo-900 text-white p-6 rounded-2xl shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div class="space-y-1">
@@ -280,7 +282,6 @@
             </div>
         </div>
 
-        <!-- SECCIÓN DE SUBIDA DE PROYECTOS PARA REVISIÓN -->
         <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-200 space-y-4">
             <h3 class="text-lg font-bold text-blue-900 flex items-center gap-2">
                 📸 Añadir Proyecto al Portafolio (Requiere Revisión)
@@ -306,7 +307,6 @@
             </form>
         </div>
 
-        <!-- MAPA PARA EL TÉCNICO -->
         <div class="bg-white p-4 rounded-2xl shadow-md border border-gray-200 space-y-2">
             <div class="flex justify-between items-center">
                 <h3 class="font-bold text-blue-900 text-sm flex items-center gap-2">🗺️ Tu Mapa de Trabajo & Clientes Activos</h3>
@@ -325,7 +325,7 @@
         </div>
     </div>
 
-    <!-- 6. PANEL DE ADMINISTRACIÓN (REVISIÓN DE TÉCNICOS Y PROYECTOS) -->
+    <!-- 6. PANEL DE ADMINISTRACIÓN -->
     <div id="page-admin-portal" class="hidden max-w-4xl mx-auto p-4 flex-grow w-full space-y-6">
         <div class="bg-gray-900 text-white p-6 rounded-2xl shadow-lg flex justify-between items-center">
             <div>
@@ -335,7 +335,6 @@
             <button onclick="showSection('landing')" class="bg-gray-800 hover:bg-gray-700 text-xs text-gray-300 px-3 py-2 rounded-xl">Salir de Admin</button>
         </div>
 
-        <!-- SECCIÓN 1: REVISIÓN DE TÉCNICOS -->
         <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-200 space-y-4">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-gray-100 pb-4">
                 <h3 class="font-bold text-gray-900 text-lg">👨‍✈️ Solicitudes de Técnicos Pendientes</h3>
@@ -348,7 +347,6 @@
             </div>
         </div>
 
-        <!-- SECCIÓN 2: REVISIÓN DE PROYECTOS SUBIDOS -->
         <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-200 space-y-4">
             <h3 class="font-bold text-gray-900 text-lg border-b border-gray-100 pb-3">📸 Proyectos de Técnicos Pendientes de Revisión</h3>
             <div id="adminPendingProjects" class="space-y-3">
@@ -562,7 +560,6 @@
             }
         });
 
-        // RENDERIZAR EQUIPO DE TÉCNICOS
         function renderTeamGrid() {
             const grid = document.getElementById('teamGrid');
             if (!grid) return;
@@ -619,7 +616,6 @@
             }).join('');
         }
 
-        // ABRIR PÁGINA PÚBLICA DEDICADA DEL TÉCNICO
         function openTechProfilePage(techId) {
             const tech = technicians.find(t => t.id === techId);
             if (!tech) return;
@@ -638,7 +634,6 @@
 
             document.getElementById('btnHireTech').onclick = () => requestSpecificTech(tech.id);
 
-            // Cargar Proyectos Aprobados del Técnico
             const approvedProjects = allProjects.filter(p => p.techId === tech.id && p.approved === true);
             const container = document.getElementById('publicTechProjects');
 
@@ -660,7 +655,6 @@
             showSection('tech-profile');
         }
 
-        // TÉCNICO ENVA PROYECTO
         document.getElementById('projectUploadForm').addEventListener('submit', function(e) {
             e.preventDefault();
             if (!activeTechUser) {
@@ -680,7 +674,7 @@
                 title: title,
                 imageUrl: imageUrl,
                 description: description,
-                approved: false, // Llega al admin para aprobación
+                approved: false,
                 date: new Date().toLocaleDateString('es-PA')
             };
 
@@ -715,6 +709,7 @@
                 "Técnico Asignado": order.techName || "Sin asignar",
                 "Costo ($)": order.cost || 0,
                 "Estado": order.status || "Pendiente",
+                "Foto Problema": order.problemPhoto || "Ninguna",
                 "Hora / Fecha": order.date || "N/A",
                 "Notas": order.detail || ""
             }));
@@ -786,9 +781,7 @@
             }
         }
 
-        // RENDER ADMIN COMPLETO (TÉCNICOS Y PROYECTOS)
         function renderAdminPortal() {
-            // 1. Técnicos
             const techContainer = document.getElementById('adminPendingList');
             const pendingTechs = allTechnicians.filter(t => !t.approved);
 
@@ -810,7 +803,6 @@
                 `).join('');
             }
 
-            // 2. Proyectos
             const projContainer = document.getElementById('adminPendingProjects');
             const pendingProjects = allProjects.filter(p => !p.approved);
 
@@ -959,8 +951,9 @@
 
             activeTechOrders.forEach(order => {
                 if (order.clientLat && order.clientLng) {
+                    const photoHtml = order.problemPhoto ? `<br><img src="${order.problemPhoto}" class="w-24 h-24 object-cover mt-1 rounded-lg border">` : '';
                     const clientMarker = L.marker([order.clientLat, order.clientLng])
-                        .bindPopup(`<b>👤 Cliente: ${order.client}</b><br>🛠️ ${order.task}<br><b>Estado:</b> ${order.status}`);
+                        .bindPopup(`<b>👤 Cliente: ${order.client}</b><br>🛠️ ${order.task}<br><b>Estado:</b> ${order.status}${photoHtml}`);
                     techLayerGroup.addLayer(clientMarker);
                 }
             });
@@ -988,14 +981,16 @@
             }
 
             container.innerHTML = techOrders.map(job => `
-                <div class="bg-white p-5 rounded-2xl shadow-md border-l-4 ${job.status.includes('Completado') ? 'border-green-500' : 'border-blue-600'} flex justify-between items-center">
-                    <div>
+                <div class="bg-white p-5 rounded-2xl shadow-md border-l-4 ${job.status.includes('Completado') ? 'border-green-500' : 'border-blue-600'} flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div class="space-y-1">
                         <span class="text-xs font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded">Pedido #${job.id}</span>
                         <h4 class="text-lg font-bold text-gray-900">${job.task}</h4>
                         <p class="text-xs text-gray-600">👤 Cliente: <b>${job.client}</b> • 📍 ${job.zone}</p>
+                        <p class="text-xs text-gray-500">📝 Notas: ${job.detail}</p>
+                        ${job.problemPhoto ? `<a href="${job.problemPhoto}" target="_blank" class="text-xs text-blue-600 underline font-bold block">Ver foto del problema ↗</a>` : ''}
                         <span class="inline-block mt-1 text-xs font-bold px-2.5 py-0.5 rounded-full ${job.status.includes('Completado') ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}">${job.status}</span>
                     </div>
-                    <div class="text-right">
+                    <div class="text-right w-full sm:w-auto">
                         <span class="text-xl font-black text-blue-900 block mb-2">$${job.cost.toFixed(2)}</span>
                         ${job.status.includes('Pendiente') ? `
                             <button onclick="acceptJob('${job.id}')" class="bg-green-600 hover:bg-green-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl">✅ Aceptar Trabajo</button>
@@ -1128,6 +1123,7 @@
                 techId: assignedTech.id,
                 techName: assignedTech.name,
                 detail: document.getElementById('jobDetail').value || "Sin notas",
+                problemPhoto: document.getElementById('clientProblemPhoto').value.trim() || "",
                 cost: calculateCost(),
                 status: "Pendiente ⏳",
                 date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -1154,10 +1150,11 @@
                 badge.classList.remove('hidden');
                 jobsList.innerHTML = clientOnlyOrders.map(order => `
                     <div class="bg-white p-5 rounded-2xl shadow-md border-l-4 ${order.status.includes('Completado') ? 'border-green-500' : 'border-amber-500'} flex justify-between items-center">
-                        <div>
+                        <div class="space-y-1">
                             <span class="text-xs font-bold bg-blue-100 text-blue-900 px-2 py-0.5 rounded">Pedido #${order.id}</span>
                             <h4 class="font-bold text-gray-900">${order.category}: ${order.task}</h4>
                             <p class="text-xs text-gray-600">👤 Técnico Asignado: <b>${order.techName}</b> • 📍 ${order.zone}</p>
+                            ${order.problemPhoto ? `<a href="${order.problemPhoto}" target="_blank" class="text-xs text-blue-600 underline font-bold block">Ver foto del problema ↗</a>` : ''}
                             <span class="inline-block mt-2 text-xs font-bold px-2.5 py-1 rounded-full ${order.status.includes('Completado') ? 'text-green-700 bg-green-100' : 'text-amber-700 bg-amber-100'}">${order.status}</span>
                         </div>
                         <div class="text-right">
